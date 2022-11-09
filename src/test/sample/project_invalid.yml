@@ -1,0 +1,10 @@
+project:
+  project_name: The best project
+  research_scope: >
+    The goal of work is to reduce time spent on report creation.
+  non_research_goals:
+    - implement idea
+    - release the project
+    -  task:
+        - one
+        - two
