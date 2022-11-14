@@ -32,9 +32,11 @@ import com.beust.jcommander.converters.FileConverter;
 import com.haulmont.yarg.structure.BandData;
 import java.io.File;
 import java.io.IOException;
-import org.cqfn.reportwine.converters.YamlToBandDataConverter;
+import org.cqfn.reportwine.converters.IrToYargConverter;
+import org.cqfn.reportwine.converters.YamlToIrConverter;
 import org.cqfn.reportwine.exceptions.BaseException;
 import org.cqfn.reportwine.generators.DocxGenerator;
+import org.cqfn.reportwine.model.Pair;
 import org.cqfn.reportwine.utils.FileNameValidator;
 
 /**
@@ -112,7 +114,9 @@ public class Main {
      */
     private void run() throws IOException, BaseException {
         final YamlMapping yaml = Yaml.createYamlInput(this.project).readYamlMapping();
-        final YamlToBandDataConverter converter = new YamlToBandDataConverter(yaml);
+        final YamlToIrConverter conv = new YamlToIrConverter(yaml);
+        final Pair item = conv.convert();
+        final IrToYargConverter converter = new IrToYargConverter(item);
         final BandData mappings = converter.convert();
         final DocxGenerator generator = new DocxGenerator(mappings);
         generator.renderDocument(this.template, this.output);
