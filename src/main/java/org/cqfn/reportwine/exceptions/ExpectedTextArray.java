@@ -21,17 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 package org.cqfn.reportwine.exceptions;
 
 /**
- * Exception thrown while parsing YAML file when an array of only scalar values is expected,
- * but an object is found in it.
+ * Exception thrown while parsing internal representation of document bindings
+ * when an array of only text values is expected, but another object is found in the array.
  *
  * @since 0.1
  */
-public final class ExpectedScalarException extends BaseException {
-    private static final long serialVersionUID = 887344392115219710L;
+public final class ExpectedTextArray extends BaseException {
+    private static final long serialVersionUID = 7634298384948443484L;
 
     /**
      * The array.
@@ -42,20 +41,20 @@ public final class ExpectedScalarException extends BaseException {
      * Constructor.
      * @param array The array
      */
-    public ExpectedScalarException(final String array) {
+    public ExpectedTextArray(final String array) {
         super();
         this.array = array;
     }
 
     @Override
     public String getInitiator() {
-        return "YAML parser";
+        return "IrToYargConverter";
     }
 
     @Override
     public String getErrorMessage() {
         return new StringBuilder()
-            .append("Expected scalar value in the array: '")
+            .append("Expected text values in the array: '")
             .append(this.array)
             .append('\'')
             .toString();
