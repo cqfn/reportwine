@@ -74,11 +74,11 @@ public class IrToYargConverter {
         if (value instanceof Array) {
             final Array array = (Array) value;
             if (array.isTextArray()) {
-                result.addData(pair.getKey(), IrToYargConverter.generateList(array.getValue()));
-            } else if (array.isTable()) {
+                result.addData(pair.getKey(), IrToYargConverter.generateList(array.getValues()));
+            } else if (array.isArrayList()) {
                 this.processArrayAsTable(pair.getKey(), array, result);
-            } else {
-                for (final Value item : array.getValue()) {
+            } else if (array.isPairArray()) {
+                for (final Value item : array.getValues()) {
                     final Pair nested = (Pair) item;
                     this.processPair(nested, result);
                 }
@@ -102,11 +102,11 @@ public class IrToYargConverter {
      */
     private void processArrayAsTable(
         final String name, final Array array, final BandData result) throws BaseException {
-        for (final Value item : array.getValue()) {
+        for (final Value item : array.getValues()) {
             final Array row = (Array) item;
             final BandData band = new BandData(name, result);
             result.addChild(band);
-            for (final Value value : row.getValue()) {
+            for (final Value value : row.getValues()) {
                 if (value instanceof Pair) {
                     this.processPair((Pair) value, band);
                 }

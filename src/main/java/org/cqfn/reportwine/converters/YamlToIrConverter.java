@@ -33,7 +33,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import org.cqfn.reportwine.exceptions.BaseException;
 import org.cqfn.reportwine.exceptions.ExpectedScalarException;
+import org.cqfn.reportwine.exceptions.UnsupportedYamlFormat;
 import org.cqfn.reportwine.model.Array;
 import org.cqfn.reportwine.model.Code;
 import org.cqfn.reportwine.model.Pair;
@@ -63,9 +65,9 @@ public class YamlToIrConverter {
     /**
      * Converts the YAML file into internal {@link Pair} structure.
      * @return The {@link Pair}  with data binding
-     * @throws ExpectedScalarException If an error occurs during YAML parsing
+     * @throws BaseException If an error occurs during YAML parsing
      */
-    public Pair convert() throws ExpectedScalarException {
+    public Pair convert() throws BaseException {
         final Set<YamlNode> keys = this.yaml.keys();
         YamlMapping mapping = this.yaml;
         String root = "";
@@ -76,7 +78,7 @@ public class YamlToIrConverter {
             mapping = this.yaml.value(keys.stream().findFirst().get()).asMapping();
         }
         final Pair item = new Pair(root);
-        item.setValue(this.processYamlRoot(mapping));
+        item.setValue(this.processYamlMapping(mapping));
         return item;
     }
 
@@ -84,10 +86,10 @@ public class YamlToIrConverter {
      * Processes the root of the YAML mapping.
      * @param mapping The root YAML mappping
      * @return The value for the binding pair
-     * @throws ExpectedScalarException If an error occurs during YAML parsing
+     * @throws BaseException If an error occurs during YAML parsing
      */
-    private Value processYamlRoot(final YamlMapping mapping)
-        throws ExpectedScalarException {
+    private Value processYamlMapping(final YamlMapping mapping)
+        throws BaseException {
         final List<Value> values = new LinkedList<>();
         for (final YamlNode key : mapping.keys()) {
             final YamlNode value = mapping.value(key);
@@ -99,7 +101,7 @@ public class YamlToIrConverter {
                     );
                     break;
                 case MAPPING:
-                    object.setValue(this.processYamlRoot(value.asMapping()));
+                    object.setValue(this.processYamlMapping(value.asMapping()));
                     break;
                 case SEQUENCE:
                     this.processYamlSequence(value.asSequence(), object);
@@ -112,8 +114,10 @@ public class YamlToIrConverter {
         final Value result;
         if (values.size() > 1) {
             result = new Array(values);
-        } else {
+        } else if (values.size() == 1) {
             result = values.get(0);
+        } else {
+            throw UnsupportedYamlFormat.INSTANCE;
         }
         return result;
     }
@@ -122,11 +126,11 @@ public class YamlToIrConverter {
      * Processes the YAML sequence.
      * @param seq The YAML sequence
      * @param item The binding pair
-     * @throws ExpectedScalarException If an error occurs during YAML parsing
+     * @throws BaseException If an error occurs during YAML parsing
      */
     private void processYamlSequence(
         final YamlSequence seq, final Pair item)
-        throws ExpectedScalarException {
+        throws BaseException {
         boolean list = false;
         final List<Value> values = new ArrayList<>(seq.size());
         int idx = 0;
@@ -141,7 +145,7 @@ public class YamlToIrConverter {
             if (list) {
                 values.add(new Text(node.asScalar().value()));
             } else {
-                values.add(this.processYamlRoot(seq.yamlMapping(idx)));
+                values.add(this.processYamlMapping(seq.yamlMapping(idx)));
             }
             idx += 1;
         }
@@ -156,7 +160,7 @@ public class YamlToIrConverter {
     private static Value processYamlScalar(final String scalar) {
         final Value value;
         if (scalar.charAt(0) == '$') {
-            value = new Code(scalar.replaceFirst("\\$<space>*", ""));
+            value = new Code(scalar.replaceFirst("\\$", ""));
         } else {
             value = new Text(
                 scalar
