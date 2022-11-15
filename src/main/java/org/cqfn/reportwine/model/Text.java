@@ -43,7 +43,10 @@ public final class Text implements Value {
         this.value = value;
     }
 
-    @Override
+    /**
+     * Returns the text value.
+     * @return The text
+     */
     public String getValue() {
         return this.value;
     }

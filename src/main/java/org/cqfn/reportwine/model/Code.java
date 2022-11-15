@@ -43,7 +43,10 @@ public final class Code implements Value {
         this.snippet = code;
     }
 
-    @Override
+    /**
+     * Returns the code.
+     * @return The text of code as string
+     */
     public String getValue() {
         return this.snippet;
     }

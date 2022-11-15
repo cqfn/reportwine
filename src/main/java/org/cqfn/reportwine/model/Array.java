@@ -26,6 +26,8 @@ package org.cqfn.reportwine.model;
 
 import java.util.LinkedList;
 import java.util.List;
+import org.cqfn.reportwine.exceptions.ExpectedArrayList;
+import org.cqfn.reportwine.exceptions.ExpectedPairArray;
 import org.cqfn.reportwine.exceptions.ExpectedTextArray;
 
 /**
@@ -49,9 +51,10 @@ public final class Array implements Value {
 
     /**
      * Checks if the array is a list of texts.
-     * @return Checking result, {@code true} if the array is a text array
+     * @return Checking result, {@code true} if the array is an array of texts
      *  or {@code false} otherwise
-     * @throws ExpectedTextArray If text array expected, but other objects found in the array
+     * @throws ExpectedTextArray If a text array is expected, but other objects
+     *  are found in the array
      */
     public boolean isTextArray() throws ExpectedTextArray {
         final boolean text = this.values.get(0) instanceof Text;
@@ -71,15 +74,71 @@ public final class Array implements Value {
     /**
      * Checks if the array is a list of arrays, i.e, a structure
      * that specifies a table.
-     * @return Checking result, {@code true} if the array is a table
+     * @return Checking result, {@code true} if the array is of arrays
      *  or {@code false} otherwise
+     * @throws ExpectedArrayList If an array list is expected, but other objects
+     *  are found in the list
      */
-    public boolean isTable() {
-        return this.values.get(0) instanceof Array;
+    public boolean isArrayList() throws ExpectedArrayList {
+        final boolean text = this.values.get(0) instanceof Array;
+        if (text) {
+            int idx = 1;
+            while (idx < this.values.size()) {
+                if (this.values.get(idx) instanceof Array) {
+                    idx += 1;
+                } else {
+                    throw new ExpectedArrayList(this.toString());
+                }
+            }
+        }
+        return text;
     }
 
-    @Override
-    public List<Value> getValue() {
+    /**
+     * Checks if the array is a list of pairs.
+     * @return Checking result, {@code true} if the array is an array of pairs
+     *  or {@code false} otherwise
+     * @throws ExpectedPairArray If an array of pairs is expected, but other objects
+     *  are found in the list
+     */
+    public boolean isPairArray() throws ExpectedPairArray {
+        final boolean text = this.values.get(0) instanceof Pair;
+        if (text) {
+            int idx = 1;
+            while (idx < this.values.size()) {
+                if (this.values.get(idx) instanceof Pair) {
+                    idx += 1;
+                } else {
+                    throw new ExpectedPairArray(this.toString());
+                }
+            }
+        }
+        return text;
+    }
+
+    /**
+     * Count a size of the array.
+     * @return The number of elements in the array
+     */
+    public int size() {
+        return this.values.size();
+    }
+
+    /**
+     * Returns values of the array.
+     * @return The list of values
+     */
+    public List<Value> getValues() {
         return this.values;
+    }
+
+    /**
+     * Returns a value by its index.
+     * @param index The index
+     * @return The value
+     * @throws IndexOutOfBoundsException If the index is wrong
+     */
+    public Value getValue(final int index) throws IndexOutOfBoundsException {
+        return this.values.get(index);
     }
 }

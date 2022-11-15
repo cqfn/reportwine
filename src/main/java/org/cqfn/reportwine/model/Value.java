@@ -30,9 +30,4 @@ package org.cqfn.reportwine.model;
  * @since 0.1
  */
 public interface Value {
-    /**
-     * Returns the value of any supported type.
-     * @return The value
-     */
-    Object getValue();
 }

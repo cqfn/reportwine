@@ -22,53 +22,35 @@
  * SOFTWARE.
  */
 
-package org.cqfn.reportwine.model;
+package org.cqfn.reportwine.exceptions;
 
 /**
- * A key - value pair for data binding.
+ * Exception thrown if the format of the input YAML is not supported by the project.
  *
  * @since 0.1
  */
-public final class Pair implements Value {
+public final class UnsupportedYamlFormat extends BaseException {
     /**
-     * The key name.
+     * The instance.
      */
-    private final String key;
+    public static final UnsupportedYamlFormat INSTANCE = new UnsupportedYamlFormat();
 
-    /**
-     * The value.
-     */
-    private Value value;
+    private static final long serialVersionUID = -4500907868264667620L;
 
     /**
      * Constructor.
-     * @param key The key name
      */
-    public Pair(final String key) {
-        this.key = key;
+    private UnsupportedYamlFormat() {
+        super();
     }
 
-    /**
-     * Binds a value to the key.
-     * @param item The value
-     */
-    public void setValue(final Value item) {
-        this.value = item;
+    @Override
+    public String getInitiator() {
+        return "YAML parser";
     }
 
-    /**
-     * Returns the key.
-     * @return The key
-     */
-    public String getKey() {
-        return this.key;
-    }
-
-    /**
-     * Returns the value.
-     * @return The value of the pair
-     */
-    public Value getValue() {
-        return this.value;
+    @Override
+    public String getErrorMessage() {
+        return "Unsupported structure of input YAML";
     }
 }

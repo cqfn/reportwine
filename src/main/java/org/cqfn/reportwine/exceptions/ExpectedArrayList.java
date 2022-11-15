@@ -22,53 +22,42 @@
  * SOFTWARE.
  */
 
-package org.cqfn.reportwine.model;
+package org.cqfn.reportwine.exceptions;
 
 /**
- * A key - value pair for data binding.
+ * Exception thrown while parsing internal representation of document bindings
+ * when an array of only array values is expected, but another object is found in the array.
  *
  * @since 0.1
  */
-public final class Pair implements Value {
-    /**
-     * The key name.
-     */
-    private final String key;
+public final class ExpectedArrayList extends BaseException {
+    private static final long serialVersionUID = 6740286561286974225L;
 
     /**
-     * The value.
+     * The array.
      */
-    private Value value;
+    private final String array;
 
     /**
      * Constructor.
-     * @param key The key name
+     * @param array The array
      */
-    public Pair(final String key) {
-        this.key = key;
+    public ExpectedArrayList(final String array) {
+        super();
+        this.array = array;
     }
 
-    /**
-     * Binds a value to the key.
-     * @param item The value
-     */
-    public void setValue(final Value item) {
-        this.value = item;
+    @Override
+    public String getInitiator() {
+        return "IrToYargConverter";
     }
 
-    /**
-     * Returns the key.
-     * @return The key
-     */
-    public String getKey() {
-        return this.key;
-    }
-
-    /**
-     * Returns the value.
-     * @return The value of the pair
-     */
-    public Value getValue() {
-        return this.value;
+    @Override
+    public String getErrorMessage() {
+        return new StringBuilder()
+            .append("Expected array values in the list: '")
+            .append(this.array)
+            .append('\'')
+            .toString();
     }
 }
