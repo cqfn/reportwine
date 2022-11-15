@@ -24,8 +24,11 @@
 
 package org.cqfn.reportwine.model;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import org.cqfn.reportwine.exceptions.ExpectedArrayList;
+import org.cqfn.reportwine.exceptions.ExpectedPairArray;
 import org.cqfn.reportwine.exceptions.ExpectedTextArray;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -37,13 +40,82 @@ import org.junit.jupiter.api.Test;
  */
 class ArrayTest {
     /**
+     * Test case: a valid text array.
+     */
+    @Test
+    void testValidTextArray() {
+        final List<Value> values = new LinkedList<>();
+        values.add(new Text("1"));
+        values.add(new Text("2"));
+        values.add(new Text("3"));
+        final Array array = new Array(values);
+        boolean oops = false;
+        try {
+            array.isTextArray();
+        } catch (final ExpectedTextArray exception) {
+            oops = true;
+        }
+        Assertions.assertFalse(oops);
+    }
+
+    /**
+     * Test case: a valid list of arrays.
+     */
+    @Test
+    void testValidArrayList() {
+        final List<Value> first = new LinkedList<>();
+        first.add(new Text("11"));
+        first.add(new Text("22"));
+        final List<Value> second = new LinkedList<>();
+        second.add(new Text("33"));
+        second.add(new Text("44"));
+        final Array array = new Array(
+            Arrays.asList(
+                new Array(first),
+                new Array(second)
+            )
+        );
+        boolean oops = false;
+        try {
+            array.isArrayList();
+        } catch (final ExpectedArrayList exception) {
+            oops = true;
+        }
+        Assertions.assertFalse(oops);
+    }
+
+    /**
+     * Test case: a valid array of pairs.
+     */
+    @Test
+    void testValidPairArray() {
+        final Pair first = new Pair("one");
+        first.setValue(new Text("1"));
+        final Pair second = new Pair("two");
+        first.setValue(new Text("2"));
+        final Array array = new Array(
+            Arrays.asList(
+                first,
+                second
+            )
+        );
+        boolean oops = false;
+        try {
+            array.isPairArray();
+        } catch (final ExpectedPairArray exception) {
+            oops = true;
+        }
+        Assertions.assertFalse(oops);
+    }
+
+    /**
      * Test case: array of text values is expected, but other object is found.
      */
     @Test
     void testExpectedTextArrayException() {
         final List<Value> values = new LinkedList<>();
-        values.add(new Text("one"));
-        values.add(new Text("two"));
+        values.add(new Text("111"));
+        values.add(new Text("222"));
         final Pair pair = new Pair("nested");
         pair.setValue(new Text("object"));
         values.add(pair);
@@ -52,6 +124,58 @@ class ArrayTest {
         try {
             array.isTextArray();
         } catch (final ExpectedTextArray exception) {
+            oops = true;
+        }
+        Assertions.assertTrue(oops);
+    }
+
+    /**
+     * Test case: array of array values is expected, but other object is found.
+     */
+    @Test
+    void testExpectedArrayListException() {
+        final List<Value> first = new LinkedList<>();
+        first.add(new Text("11"));
+        first.add(new Text("22"));
+        final List<Value> second = new LinkedList<>();
+        second.add(new Text("33"));
+        second.add(new Text("44"));
+        final Array array = new Array(
+            Arrays.asList(
+                new Array(first),
+                new Array(second),
+                new Text("55")
+            )
+        );
+        boolean oops = false;
+        try {
+            array.isArrayList();
+        } catch (final ExpectedArrayList exception) {
+            oops = true;
+        }
+        Assertions.assertTrue(oops);
+    }
+
+    /**
+     * Test case: array of array values is expected, but other object is found.
+     */
+    @Test
+    void testExpectedPairArrayException() {
+        final Pair first = new Pair("one");
+        first.setValue(new Text("1"));
+        final Pair second = new Pair("two");
+        second.setValue(new Text("2"));
+        final Array array = new Array(
+            Arrays.asList(
+                first,
+                second,
+                new Text("text")
+            )
+        );
+        boolean oops = false;
+        try {
+            array.isPairArray();
+        } catch (final ExpectedPairArray exception) {
             oops = true;
         }
         Assertions.assertTrue(oops);
