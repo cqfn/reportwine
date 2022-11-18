@@ -79,9 +79,9 @@ class IrToYargConverterTest {
         firstdescr.setValue(new Text("First stage"));
         final Pair seconddescr = new Pair("description");
         seconddescr.setValue(new Text("Second stage"));
-        final Pair firstdur = new Pair("description");
+        final Pair firstdur = new Pair("duration");
         firstdur.setValue(new Text("3"));
-        final Pair seconddur = new Pair("description");
+        final Pair seconddur = new Pair("duration");
         seconddur.setValue(new Text("4"));
         final Array first = new Array(
             Arrays.asList(

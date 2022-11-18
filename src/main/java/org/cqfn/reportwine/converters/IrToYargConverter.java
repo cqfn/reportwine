@@ -59,37 +59,58 @@ public class IrToYargConverter {
      */
     public BandData convert() throws BaseException {
         final BandData result = new BandData(this.structure.getKey());
-        this.processPair(this.structure, result);
+        this.processPair(this.structure, result, true);
         return result;
     }
 
     /**
-     * Processes the IR object.
+     * Processes the IR Pair object.
      * @param pair The IR pair element
-     * @param result The result YARG bindings
+     * @param parent The parent YARG bindings
+     * @param root Identifies if the current parent bindings is the root one
      * @throws BaseException If an error occurs during IR parsing
      */
-    private void processPair(final Pair pair, final BandData result) throws BaseException {
+    private void processPair(final Pair pair, final BandData parent, final boolean root)
+        throws BaseException {
         final Value value = pair.getValue();
         if (value instanceof Array) {
             final Array array = (Array) value;
             if (array.isTextArray()) {
-                result.addData(pair.getKey(), IrToYargConverter.generateList(array.getValues()));
+                parent.addData(pair.getKey(), IrToYargConverter.generateList(array.getValues()));
             } else if (array.isArrayList()) {
-                this.processArrayAsTable(pair.getKey(), array, result);
+                this.processArrayAsTable(pair.getKey(), array, parent);
             } else if (array.isPairArray()) {
-                for (final Value item : array.getValues()) {
-                    final Pair nested = (Pair) item;
-                    this.processPair(nested, result);
-                }
+                this.processNestedPairs(pair, parent, root);
             }
         } else if (value instanceof Pair) {
             final Pair nested = (Pair) value;
-            final BandData band = new BandData(pair.getKey(), result);
-            result.addChild(band);
-            this.processPair(nested, band);
+            final BandData band = new BandData(pair.getKey(), parent);
+            parent.addChild(band);
+            this.processPair(nested, band, root);
         } else if (value instanceof Text) {
-            result.addData(pair.getKey(), ((Text) value).getValue());
+            parent.addData(pair.getKey(), ((Text) value).getValue());
+        }
+    }
+
+    /**
+     * Processes the IR Array of Pairs.
+     * @param pair The IR pair element
+     * @param parent The parent YARG bindings
+     * @param root Identifies if the current parent bindings is the root one
+     * @throws BaseException If an error occurs during IR parsing
+     */
+    private void processNestedPairs(final Pair pair, final BandData parent, final boolean root)
+        throws BaseException {
+        final Value value = pair.getValue();
+        final Array array = (Array) value;
+        BandData nested = parent;
+        if (!root) {
+            nested = new BandData(pair.getKey(), parent);
+            parent.addChild(nested);
+        }
+        for (final Value item : array.getValues()) {
+            final Pair child = (Pair) item;
+            this.processPair(child, nested, false);
         }
     }
 
@@ -108,7 +129,7 @@ public class IrToYargConverter {
             result.addChild(band);
             for (final Value value : row.getValues()) {
                 if (value instanceof Pair) {
-                    this.processPair((Pair) value, band);
+                    this.processPair((Pair) value, band, false);
                 }
             }
         }
@@ -123,7 +144,10 @@ public class IrToYargConverter {
         final StringBuilder builder = new StringBuilder();
         int idx = 1;
         for (final Value item : values) {
-            builder.append(idx).append(". ").append(((Text) item).getValue()).append('\n');
+            builder.append(idx).append(". ").append(((Text) item).getValue());
+            if (idx != values.size()) {
+                builder.append('\n');
+            }
             idx += 1;
         }
         return builder.toString();

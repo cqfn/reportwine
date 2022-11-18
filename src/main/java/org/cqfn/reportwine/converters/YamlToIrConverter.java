@@ -30,6 +30,7 @@ import com.amihaiemil.eoyaml.YamlMapping;
 import com.amihaiemil.eoyaml.YamlNode;
 import com.amihaiemil.eoyaml.YamlSequence;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -143,9 +144,17 @@ public class YamlToIrConverter {
                 }
             }
             if (list) {
-                values.add(new Text(node.asScalar().value()));
+                values.add(YamlToIrConverter.processYamlScalar(node.asScalar().value()));
             } else {
-                values.add(this.processYamlMapping(seq.yamlMapping(idx)));
+                final Value nested = this.processYamlMapping(seq.yamlMapping(idx));
+                if (nested instanceof Pair) {
+                    final Array array = new Array(
+                        Collections.singletonList(nested)
+                    );
+                    values.add(array);
+                } else {
+                    values.add(nested);
+                }
             }
             idx += 1;
         }
@@ -162,11 +171,13 @@ public class YamlToIrConverter {
         if (scalar.charAt(0) == '$') {
             value = new Code(scalar.replaceFirst("\\$", ""));
         } else {
-            value = new Text(
-                scalar
-                    .replaceAll("\r\n", "")
-                    .replaceAll("( )+", " ")
-            );
+            String text = scalar
+                .replaceAll("\r\n", "")
+                .replaceAll("( )+", " ");
+            if (text.charAt(0) == ' ') {
+                text = text.replaceFirst("( )+", "");
+            }
+            value = new Text(text);
         }
         return value;
     }
