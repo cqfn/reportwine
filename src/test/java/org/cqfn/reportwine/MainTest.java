@@ -102,7 +102,7 @@ class MainTest {
      * @param source A temporary directory
      */
     @Test
-    void testOutputOptionWithoutParameter(@TempDir final Path source) throws IOException {
+    void testWithInvalidYaml(@TempDir final Path source) throws IOException {
         final String[] example = {
             MainTest.TEMPLATE,
             MainTest.TESTS_PATH.concat("template.docx"),
@@ -120,7 +120,7 @@ class MainTest {
             message = exception.getErrorMessage();
         }
         Assertions.assertTrue(caught);
-        final String expectedmsg = "Expected scalar value in the sequence: '- implement idea";
+        final String expectedmsg = "Expected scalar value in the array: '- implement idea";
         Assertions.assertTrue(message.startsWith(expectedmsg));
     }
 }

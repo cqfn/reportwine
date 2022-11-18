@@ -25,26 +25,23 @@
 package org.cqfn.reportwine.exceptions;
 
 /**
- * Exception thrown while parsing YAML file when an array of only scalar values is expected,
- * but an object is found in it.
+ * Exception thrown if the format of the input YAML is not supported by the project.
  *
  * @since 0.1
  */
-public final class ExpectedScalarException extends BaseException {
-    private static final long serialVersionUID = 887344392115219710L;
-
+public final class UnsupportedYamlFormat extends BaseException {
     /**
-     * The array.
+     * The instance.
      */
-    private final String array;
+    public static final UnsupportedYamlFormat INSTANCE = new UnsupportedYamlFormat();
+
+    private static final long serialVersionUID = -4500907868264667620L;
 
     /**
      * Constructor.
-     * @param array The array
      */
-    public ExpectedScalarException(final String array) {
+    private UnsupportedYamlFormat() {
         super();
-        this.array = array;
     }
 
     @Override
@@ -54,10 +51,6 @@ public final class ExpectedScalarException extends BaseException {
 
     @Override
     public String getErrorMessage() {
-        return new StringBuilder()
-            .append("Expected scalar value in the array: '")
-            .append(this.array)
-            .append('\'')
-            .toString();
+        return "Unsupported structure of input YAML";
     }
 }

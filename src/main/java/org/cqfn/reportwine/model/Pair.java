@@ -22,42 +22,53 @@
  * SOFTWARE.
  */
 
-package org.cqfn.reportwine.exceptions;
+package org.cqfn.reportwine.model;
 
 /**
- * Exception thrown while parsing YAML file when an array of only scalar values is expected,
- * but an object is found in it.
+ * A key - value pair for data binding.
  *
  * @since 0.1
  */
-public final class ExpectedScalarException extends BaseException {
-    private static final long serialVersionUID = 887344392115219710L;
+public final class Pair implements Value {
+    /**
+     * The key name.
+     */
+    private final String key;
 
     /**
-     * The array.
+     * The value.
      */
-    private final String array;
+    private Value value;
 
     /**
      * Constructor.
-     * @param array The array
+     * @param key The key name
      */
-    public ExpectedScalarException(final String array) {
-        super();
-        this.array = array;
+    public Pair(final String key) {
+        this.key = key;
     }
 
-    @Override
-    public String getInitiator() {
-        return "YAML parser";
+    /**
+     * Binds a value to the key.
+     * @param item The value
+     */
+    public void setValue(final Value item) {
+        this.value = item;
     }
 
-    @Override
-    public String getErrorMessage() {
-        return new StringBuilder()
-            .append("Expected scalar value in the array: '")
-            .append(this.array)
-            .append('\'')
-            .toString();
+    /**
+     * Returns the key.
+     * @return The key
+     */
+    public String getKey() {
+        return this.key;
+    }
+
+    /**
+     * Returns the value.
+     * @return The value of the pair
+     */
+    public Value getValue() {
+        return this.value;
     }
 }

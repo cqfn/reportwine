@@ -25,13 +25,13 @@
 package org.cqfn.reportwine.exceptions;
 
 /**
- * Exception thrown while parsing YAML file when an array of only scalar values is expected,
- * but an object is found in it.
+ * Exception thrown while parsing internal representation of document bindings
+ * when an array of only array values is expected, but another object is found in the array.
  *
  * @since 0.1
  */
-public final class ExpectedScalarException extends BaseException {
-    private static final long serialVersionUID = 887344392115219710L;
+public final class ExpectedArrayList extends BaseException {
+    private static final long serialVersionUID = 6740286561286974225L;
 
     /**
      * The array.
@@ -42,20 +42,20 @@ public final class ExpectedScalarException extends BaseException {
      * Constructor.
      * @param array The array
      */
-    public ExpectedScalarException(final String array) {
+    public ExpectedArrayList(final String array) {
         super();
         this.array = array;
     }
 
     @Override
     public String getInitiator() {
-        return "YAML parser";
+        return "IrToYargConverter";
     }
 
     @Override
     public String getErrorMessage() {
         return new StringBuilder()
-            .append("Expected scalar value in the array: '")
+            .append("Expected array values in the list: '")
             .append(this.array)
             .append('\'')
             .toString();

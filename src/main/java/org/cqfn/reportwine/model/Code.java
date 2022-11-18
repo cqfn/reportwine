@@ -22,42 +22,32 @@
  * SOFTWARE.
  */
 
-package org.cqfn.reportwine.exceptions;
+package org.cqfn.reportwine.model;
 
 /**
- * Exception thrown while parsing YAML file when an array of only scalar values is expected,
- * but an object is found in it.
+ * A code snippet to process data bindings to get value.
  *
  * @since 0.1
  */
-public final class ExpectedScalarException extends BaseException {
-    private static final long serialVersionUID = 887344392115219710L;
-
+public final class Code implements Value {
     /**
-     * The array.
+     * The code snippet.
      */
-    private final String array;
+    private final String snippet;
 
     /**
      * Constructor.
-     * @param array The array
+     * @param code The code snippet in some programming language
      */
-    public ExpectedScalarException(final String array) {
-        super();
-        this.array = array;
+    public Code(final String code) {
+        this.snippet = code;
     }
 
-    @Override
-    public String getInitiator() {
-        return "YAML parser";
-    }
-
-    @Override
-    public String getErrorMessage() {
-        return new StringBuilder()
-            .append("Expected scalar value in the array: '")
-            .append(this.array)
-            .append('\'')
-            .toString();
+    /**
+     * Returns the code.
+     * @return The text of code as string
+     */
+    public String getValue() {
+        return this.snippet;
     }
 }
