@@ -26,6 +26,8 @@ package org.cqfn.reportwine.model;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import org.cqfn.reportwine.exceptions.BaseException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -135,11 +137,11 @@ class IrMergerTest {
     }
 
     /**
-     * Test replacing of a text value in the initial IR pair with the data
+     * Test replacing of a text array in the initial IR pair with the array
      * from the second IR structure.
      */
     @Test
-    void replaceArrayValueInInitialStructure() {
+    void replaceTextArrayValueInInitialStructure() {
         final Pair initial = new Pair("doc");
         initial.setValue(
             new Array(
@@ -183,5 +185,61 @@ class IrMergerTest {
         final Value three = array.getValue(2);
         Assertions.assertTrue(three instanceof Text);
         Assertions.assertEquals("333", ((Text) three).getValue());
+    }
+
+    /**
+     * Test replacing of an array list in the initial IR pair with the array list
+     * from the second IR structure.
+     * That is, test replacement of all the rows of the table with a new row.
+     */
+    @Test
+    void replaceArrayListInInitialStructure() {
+        final List<Value> first = new LinkedList<>();
+        first.add(new Text("11"));
+        first.add(new Text("22"));
+        final List<Value> second = new LinkedList<>();
+        second.add(new Text("33"));
+        second.add(new Text("44"));
+        final Array one = new Array(
+            Arrays.asList(
+                new Array(first),
+                new Array(second)
+            )
+        );
+        final Pair initial = new Pair("survey", one);
+        final List<Value> third = new LinkedList<>();
+        third.add(new Text("55"));
+        third.add(new Text("66"));
+        final Array two = new Array(
+            Collections.singletonList(new Array(third))
+        );
+        final Pair replacement = new Pair("survey", two);
+        final IrMerger merger = new IrMerger();
+        boolean oops = false;
+        Pair result = null;
+        try {
+            result = merger.merge(initial, replacement);
+        } catch (final BaseException exception) {
+            oops = true;
+        }
+        Assertions.assertFalse(oops);
+        Assertions.assertNotNull(result);
+        final Value value = result.getValue();
+        Assertions.assertTrue(value instanceof Array);
+        final Array array = (Array) value;
+        try {
+            Assertions.assertTrue(array.isArrayList());
+        } catch (final BaseException exception) {
+            oops = true;
+        }
+        Assertions.assertFalse(oops);
+        Assertions.assertTrue(array.getValue(0) instanceof Array);
+        final Array nested = (Array) array.getValue(0);
+        final Value five = nested.getValue(0);
+        Assertions.assertTrue(five instanceof Text);
+        Assertions.assertEquals("55", ((Text) five).getValue());
+        final Value six = nested.getValue(1);
+        Assertions.assertTrue(six instanceof Text);
+        Assertions.assertEquals("66", ((Text) six).getValue());
     }
 }
