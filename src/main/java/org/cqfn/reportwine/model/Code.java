@@ -24,6 +24,8 @@
 
 package org.cqfn.reportwine.model;
 
+import java.util.Objects;
+
 /**
  * A code snippet to process data bindings to get value.
  *
@@ -49,5 +51,23 @@ public final class Code implements Value {
      */
     public String getValue() {
         return this.snippet;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        final Code code;
+        boolean equal = false;
+        if (obj instanceof Code) {
+            code = (Code) obj;
+            if (this.snippet.equals(code.getValue())) {
+                equal = true;
+            }
+        }
+        return equal;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.snippet);
     }
 }

@@ -24,6 +24,8 @@
 
 package org.cqfn.reportwine.model;
 
+import java.util.Objects;
+
 /**
  * A text data.
  *
@@ -49,5 +51,23 @@ public final class Text implements Value {
      */
     public String getValue() {
         return this.value;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        final Text text;
+        boolean equal = false;
+        if (obj instanceof Text) {
+            text = (Text) obj;
+            if (this.value.equals(text.getValue())) {
+                equal = true;
+            }
+        }
+        return equal;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.value);
     }
 }

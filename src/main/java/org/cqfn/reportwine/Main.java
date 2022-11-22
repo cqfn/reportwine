@@ -36,6 +36,7 @@ import org.cqfn.reportwine.converters.IrToYargConverter;
 import org.cqfn.reportwine.converters.YamlToIrConverter;
 import org.cqfn.reportwine.exceptions.BaseException;
 import org.cqfn.reportwine.generators.DocxGenerator;
+import org.cqfn.reportwine.model.IrMerger;
 import org.cqfn.reportwine.model.Pair;
 import org.cqfn.reportwine.utils.FileNameValidator;
 
@@ -78,9 +79,20 @@ public class Main {
         converter = FileConverter.class,
         required = true,
         arity = 1,
-        description = "The file with project settings. Expected extensions: .yml"
+        description = "The file with project description. Expected extension: .yml"
     )
     private File project;
+
+    /**
+     * The configuration file.
+     */
+    @Parameter(
+        names = { "--config", "-c" },
+        converter = FileConverter.class,
+        arity = 1,
+        description = "The file with configuration settings. Expected extension: .yml"
+    )
+    private File config;
 
     /**
      * The help option.
@@ -113,12 +125,31 @@ public class Main {
      * @throws BaseException If an error during a document processing occurs
      */
     private void run() throws IOException, BaseException {
-        final YamlMapping yaml = Yaml.createYamlInput(this.project).readYamlMapping();
-        final YamlToIrConverter conv = new YamlToIrConverter(yaml);
-        final Pair item = conv.convert();
-        final IrToYargConverter converter = new IrToYargConverter(item);
+        final Pair info = Main.convertYamlToIr(this.project);
+        final IrToYargConverter converter;
+        if (this.config == null) {
+            converter = new IrToYargConverter(info);
+        } else {
+            final Pair settings = Main.convertYamlToIr(this.config);
+            final IrMerger merger = new IrMerger();
+            final Pair combined = merger.merge(info, settings);
+            converter = new IrToYargConverter(combined);
+        }
         final BandData mappings = converter.convert();
         final DocxGenerator generator = new DocxGenerator(mappings);
         generator.renderDocument(this.template, this.output);
+    }
+
+    /**
+     * Converts the YAML data into the intermediate representation.
+     * @param file The YAML file
+     * @return The intermediate representation of the project data
+     * @throws IOException If an error during input or output actions occurs
+     * @throws BaseException If an error during a document processing occurs
+     */
+    private static Pair convertYamlToIr(final File file) throws IOException, BaseException {
+        final YamlMapping yaml = Yaml.createYamlInput(file).readYamlMapping();
+        final YamlToIrConverter conv = new YamlToIrConverter(yaml);
+        return conv.convert();
     }
 }
