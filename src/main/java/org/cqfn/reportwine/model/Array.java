@@ -24,8 +24,10 @@
 
 package org.cqfn.reportwine.model;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import org.cqfn.reportwine.exceptions.ExpectedArrayList;
 import org.cqfn.reportwine.exceptions.ExpectedPairArray;
 import org.cqfn.reportwine.exceptions.ExpectedTextArray;
@@ -140,5 +142,21 @@ public final class Array implements Value {
      */
     public Value getValue(final int index) throws IndexOutOfBoundsException {
         return this.values.get(index);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        final Array array;
+        boolean equal = false;
+        if (obj instanceof Array) {
+            array = (Array) obj;
+            equal = Arrays.deepEquals(this.values.toArray(), array.getValues().toArray());
+        }
+        return equal;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.values);
     }
 }

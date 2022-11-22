@@ -24,6 +24,8 @@
 
 package org.cqfn.reportwine.model;
 
+import java.util.Objects;
+
 /**
  * A key - value pair for data binding.
  *
@@ -45,7 +47,17 @@ public final class Pair implements Value {
      * @param key The key name
      */
     public Pair(final String key) {
+        this(key, null);
+    }
+
+    /**
+     * Constructor.
+     * @param key The key name
+     * @param value The value
+     */
+    public Pair(final String key, final Value value) {
         this.key = key;
+        this.value = value;
     }
 
     /**
@@ -70,5 +82,23 @@ public final class Pair implements Value {
      */
     public Value getValue() {
         return this.value;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        final Pair pair;
+        boolean equal = false;
+        if (obj instanceof Pair) {
+            pair = (Pair) obj;
+            if (this.key.equals(pair.getKey()) && this.value.equals(pair.getValue())) {
+                equal = true;
+            }
+        }
+        return equal;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.key, this.value);
     }
 }

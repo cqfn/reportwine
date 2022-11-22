@@ -82,6 +82,31 @@ class MainTest {
     }
 
     /**
+     * Test passing required and additional options to main().
+     * @param source A temporary directory
+     */
+    @Test
+    void testNoExceptionWithConfig(@TempDir final Path source) {
+        final String[] example = {
+            MainTest.TEMPLATE,
+            MainTest.TESTS_PATH.concat("template.docx"),
+            MainTest.OUTPUT,
+            source.resolve("report.docx").toString(),
+            MainTest.PROJECT,
+            MainTest.TESTS_PATH.concat("project_valid.yml"),
+            "--config",
+            MainTest.TESTS_PATH.concat("config.yml"),
+        };
+        boolean caught = false;
+        try {
+            Main.main(example);
+        } catch (final BaseException | IOException | ParameterException exception) {
+            caught = true;
+        }
+        Assertions.assertFalse(caught);
+    }
+
+    /**
      * Test passing no option to main().
      */
     @Test

@@ -36,7 +36,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Test for {@link Array} class.
  *
- * @since 0.1.5
+ * @since 0.1
  */
 class ArrayTest {
     /**
