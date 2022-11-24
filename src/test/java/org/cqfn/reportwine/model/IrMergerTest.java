@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.cqfn.reportwine.exceptions.BaseException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -61,14 +60,7 @@ class IrMergerTest {
             )
         );
         final IrMerger merger = new IrMerger();
-        boolean oops = false;
-        Pair result = null;
-        try {
-            result = merger.merge(initial, second);
-        } catch (final BaseException exception) {
-            oops = true;
-        }
-        Assertions.assertFalse(oops);
+        final Pair result = merger.merge(initial, second);
         Assertions.assertNotNull(result);
         Value value = result.getValue();
         Assertions.assertTrue(value instanceof Array);
@@ -107,14 +99,7 @@ class IrMergerTest {
             )
         );
         final IrMerger merger = new IrMerger();
-        boolean oops = false;
-        Pair result = null;
-        try {
-            result = merger.merge(initial, second);
-        } catch (final BaseException exception) {
-            oops = true;
-        }
-        Assertions.assertFalse(oops);
+        final Pair result = merger.merge(initial, second);
         Assertions.assertNotNull(result);
         Value value = result.getValue();
         Assertions.assertTrue(value instanceof Array);
@@ -163,14 +148,7 @@ class IrMergerTest {
             )
         );
         final IrMerger merger = new IrMerger();
-        boolean oops = false;
-        Pair result = null;
-        try {
-            result = merger.merge(initial, second);
-        } catch (final BaseException exception) {
-            oops = true;
-        }
-        Assertions.assertFalse(oops);
+        final Pair result = merger.merge(initial, second);
         Assertions.assertNotNull(result);
         final Value value = result.getValue();
         Assertions.assertTrue(value instanceof Array);
@@ -215,24 +193,12 @@ class IrMergerTest {
         );
         final Pair replacement = new Pair("survey", two);
         final IrMerger merger = new IrMerger();
-        boolean oops = false;
-        Pair result = null;
-        try {
-            result = merger.merge(initial, replacement);
-        } catch (final BaseException exception) {
-            oops = true;
-        }
-        Assertions.assertFalse(oops);
+        final Pair result = merger.merge(initial, replacement);
         Assertions.assertNotNull(result);
         final Value value = result.getValue();
         Assertions.assertTrue(value instanceof Array);
         final Array array = (Array) value;
-        try {
-            Assertions.assertTrue(array.isArrayList());
-        } catch (final BaseException exception) {
-            oops = true;
-        }
-        Assertions.assertFalse(oops);
+        Assertions.assertTrue(array.isArrayList());
         Assertions.assertTrue(array.getValue(0) instanceof Array);
         final Array nested = (Array) array.getValue(0);
         final Value five = nested.getValue(0);

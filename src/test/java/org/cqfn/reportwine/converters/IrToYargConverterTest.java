@@ -55,8 +55,7 @@ class IrToYargConverterTest {
                 second
             )
         );
-        final Pair root = new Pair("report");
-        root.setValue(array);
+        final Pair root = new Pair("report", array);
         final IrToYargConverter converter = new IrToYargConverter(root);
         boolean oops = false;
         BandData bindings = null;

@@ -27,7 +27,6 @@ package org.cqfn.reportwine.model;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import org.cqfn.reportwine.exceptions.BaseException;
 
 /**
  * Merger of two intermediate representation (IR) structures into one.
@@ -42,9 +41,8 @@ public class IrMerger {
      * @param first The first pair with initial information
      * @param second The second pair with additional data or data for replacement
      * @return A new pair
-     * @throws BaseException If an error during an IR processing occurs
      */
-    public Pair merge(final Pair first, final Pair second) throws BaseException {
+    public Pair merge(final Pair first, final Pair second) {
         Pair result = null;
         if (first.getKey().equals(second.getKey())) {
             result = new Pair(first.getKey());
@@ -70,10 +68,8 @@ public class IrMerger {
      * @param result The pair with a merged value
      * @param first The first value
      * @param second The second value
-     * @throws BaseException If an error during an IR processing occurs
      */
-    private void processCasesWithArray(final Pair result, final Value first, final Value second)
-        throws BaseException {
+    private void processCasesWithArray(final Pair result, final Value first, final Value second) {
         if (first instanceof Array && second instanceof Array) {
             final Array array = this.mergeArrays((Array) first, (Array) second);
             result.setValue(array);
@@ -97,9 +93,8 @@ public class IrMerger {
      * @param first The first array with initial information
      * @param second The second array with additional data or data for replacement
      * @return A new array
-     * @throws BaseException If an error during an IR processing occurs
      */
-    private Array mergeArrays(final Array first, final Array second) throws BaseException {
+    private Array mergeArrays(final Array first, final Array second) {
         List<Value> values = new LinkedList<>();
         if (first.isPairArray() && second.isPairArray()) {
             values.addAll(first.getValues());

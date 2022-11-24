@@ -1,0 +1,29 @@
+report:
+  name: MyProject
+  goals:
+    - one
+    - two
+    - three
+  about: >
+    The goal of work is to explore, collect data,
+    process it, analyze, implement approach and write a paper.
+  timeline:
+    one:
+      start_date: 2020
+      end_date:
+        planned: 2022
+        actual: 2023
+  milestones:
+    - description: First stage
+      duration: 3
+      objectives: Explore and collect
+    - description: Second stage
+      duration: 4
+      objectives: Process and analyze
+    - description: Last stage
+      duration: 4
+      objectives:
+        - Implement
+        - Write paper
+  current_phase: 3
+  current_objectives: "$ return milestones[current_phase - 1].objectives;"

@@ -24,10 +24,23 @@
 
 package org.cqfn.reportwine.model;
 
+import com.google.gson.JsonElement;
+
 /**
  * A value of a document data binding pair.
  *
  * @since 0.1
  */
 public interface Value {
+    /**
+     * Converts the value into a JSON element.
+     * @return The value serialized to a JSON element of GSON library
+     */
+    JsonElement toJson();
+
+    /**
+     * Converts the value to a string that contains a JSON object.
+     * @return The value serialized to JSON string
+     */
+    String toJsonString();
 }

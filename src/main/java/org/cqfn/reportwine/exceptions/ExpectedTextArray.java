@@ -56,7 +56,7 @@ public final class ExpectedTextArray extends BaseException {
         return new StringBuilder()
             .append("Expected text values in the array: '")
             .append(this.array)
-            .append('\'')
+            .append("...\'")
             .toString();
     }
 }
