@@ -24,8 +24,9 @@
 
 package org.cqfn.reportwine.model;
 
+import com.amihaiemil.eoyaml.Yaml;
+import com.amihaiemil.eoyaml.YamlMapping;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -34,9 +35,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.amihaiemil.eoyaml.Yaml;
-import com.amihaiemil.eoyaml.YamlMapping;
 import org.cqfn.reportwine.converters.YamlToIrConverter;
 import org.cqfn.reportwine.exceptions.BaseException;
 import org.junit.jupiter.api.Assertions;
@@ -164,7 +162,7 @@ class JsonSerializerTest {
         oops = false;
         String expected = "";
         try {
-            expected = readAsString(
+            expected = JsonSerializerTest.readAsString(
                 Paths.get(JsonSerializerTest.TESTS_PATH.concat("serialization_to_string.txt"))
             );
         } catch (final IOException exception) {
@@ -175,11 +173,12 @@ class JsonSerializerTest {
     }
 
     /**
-     * Reads file content as a string.
+     * Reads a file content as a string.
+     * @param path The path to the file
      * @return The file content
      * @throws IOException If the file can't be read
      */
-    private String readAsString(final Path path) throws IOException {
+    private static String readAsString(final Path path) throws IOException {
         final InputStream stream = Files.newInputStream(path);
         final StringBuilder builder = new StringBuilder();
         for (int chr = stream.read(); chr != -1; chr = stream.read()) {
