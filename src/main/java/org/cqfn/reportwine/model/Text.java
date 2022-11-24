@@ -24,6 +24,10 @@
 
 package org.cqfn.reportwine.model;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
 import java.util.Objects;
 
 /**
@@ -51,6 +55,29 @@ public final class Text implements Value {
      */
     public String getValue() {
         return this.value;
+    }
+
+    @Override
+    public String toJsonString() {
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(this.toJson());
+    }
+
+    @Override
+    public JsonElement toJson() {
+        JsonPrimitive primitive;
+        try {
+            final int numeric = Integer.parseInt(this.value);
+            primitive = new JsonPrimitive(numeric);
+        } catch (final NumberFormatException ignored) {
+            try {
+                final double numeric = Double.parseDouble(this.value);
+                primitive = new JsonPrimitive(numeric);
+            } catch (final NumberFormatException exception) {
+                primitive = new JsonPrimitive(this.value);
+            }
+        }
+        return primitive;
     }
 
     @Override

@@ -24,13 +24,16 @@
 
 package org.cqfn.reportwine.model;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import org.cqfn.reportwine.exceptions.ExpectedArrayList;
-import org.cqfn.reportwine.exceptions.ExpectedPairArray;
-import org.cqfn.reportwine.exceptions.ExpectedTextArray;
 
 /**
  * An array of values.
@@ -55,22 +58,16 @@ public final class Array implements Value {
      * Checks if the array is a list of texts.
      * @return Checking result, {@code true} if the array is an array of texts
      *  or {@code false} otherwise
-     * @throws ExpectedTextArray If a text array is expected, but other objects
-     *  are found in the array
      */
-    public boolean isTextArray() throws ExpectedTextArray {
-        final boolean text = this.values.get(0) instanceof Text;
-        if (text) {
-            int idx = 1;
-            while (idx < this.values.size()) {
-                if (this.values.get(idx) instanceof Text) {
-                    idx += 1;
-                } else {
-                    throw new ExpectedTextArray(this.toString());
-                }
+    public boolean isTextArray() {
+        boolean array = true;
+        for (final Value value : this.values) {
+            if (!(value instanceof Text)) {
+                array = false;
+                break;
             }
         }
-        return text;
+        return array;
     }
 
     /**
@@ -78,19 +75,13 @@ public final class Array implements Value {
      * that specifies a table.
      * @return Checking result, {@code true} if the array is of arrays
      *  or {@code false} otherwise
-     * @throws ExpectedArrayList If an array list is expected, but other objects
-     *  are found in the list
      */
-    public boolean isArrayList() throws ExpectedArrayList {
-        final boolean text = this.values.get(0) instanceof Array;
-        if (text) {
-            int idx = 1;
-            while (idx < this.values.size()) {
-                if (this.values.get(idx) instanceof Array) {
-                    idx += 1;
-                } else {
-                    throw new ExpectedArrayList(this.toString());
-                }
+    public boolean isArrayList() {
+        boolean text = true;
+        for (final Value value : this.values) {
+            if (!(value instanceof Array)) {
+                text = false;
+                break;
             }
         }
         return text;
@@ -100,22 +91,16 @@ public final class Array implements Value {
      * Checks if the array is a list of pairs.
      * @return Checking result, {@code true} if the array is an array of pairs
      *  or {@code false} otherwise
-     * @throws ExpectedPairArray If an array of pairs is expected, but other objects
-     *  are found in the list
      */
-    public boolean isPairArray() throws ExpectedPairArray {
-        final boolean text = this.values.get(0) instanceof Pair;
-        if (text) {
-            int idx = 1;
-            while (idx < this.values.size()) {
-                if (this.values.get(idx) instanceof Pair) {
-                    idx += 1;
-                } else {
-                    throw new ExpectedPairArray(this.toString());
-                }
+    public boolean isPairArray() {
+        boolean pair = true;
+        for (final Value value : this.values) {
+            if (!(value instanceof Pair)) {
+                pair = false;
+                break;
             }
         }
-        return text;
+        return pair;
     }
 
     /**
@@ -142,6 +127,42 @@ public final class Array implements Value {
      */
     public Value getValue(final int index) throws IndexOutOfBoundsException {
         return this.values.get(index);
+    }
+
+    @Override
+    public String toJsonString() {
+        final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        return gson.toJson(this.toJson());
+    }
+
+    @Override
+    public JsonElement toJson() {
+        JsonElement element = JsonNull.INSTANCE;
+        if (this.isPairArray()) {
+            final JsonObject object = new JsonObject();
+            for (final Value value : this.values) {
+                final Pair pair = (Pair) value;
+                object.add(pair.getKey(), pair.getValue().toJson());
+            }
+            element = object;
+        }
+        if (this.isTextArray()) {
+            final JsonArray array = new JsonArray();
+            for (final Value value : this.values) {
+                final Text text = (Text) value;
+                array.add(text.toJson());
+            }
+            element = array;
+        }
+        if (this.isArrayList()) {
+            final JsonArray array = new JsonArray();
+            for (final Value value : this.values) {
+                final Array item = (Array) value;
+                array.add(item.toJson());
+            }
+            element = array;
+        }
+        return element;
     }
 
     @Override

@@ -25,8 +25,10 @@
 package org.cqfn.reportwine.converters;
 
 import com.haulmont.yarg.structure.BandData;
-import java.util.List;
 import org.cqfn.reportwine.exceptions.BaseException;
+import org.cqfn.reportwine.exceptions.ExpectedArrayList;
+import org.cqfn.reportwine.exceptions.ExpectedPairArray;
+import org.cqfn.reportwine.exceptions.ExpectedTextArray;
 import org.cqfn.reportwine.model.Array;
 import org.cqfn.reportwine.model.Pair;
 import org.cqfn.reportwine.model.Text;
@@ -68,7 +70,7 @@ public class IrToYargConverter {
      * @param pair The IR pair element
      * @param parent The parent YARG bindings
      * @param root Identifies if the current parent bindings is the root one
-     * @throws BaseException If an error occurs during IR parsing
+     * @throws BaseException If an error occurs during IR arrays parsing
      */
     private void processPair(final Pair pair, final BandData parent, final boolean root)
         throws BaseException {
@@ -76,11 +78,13 @@ public class IrToYargConverter {
         if (value instanceof Array) {
             final Array array = (Array) value;
             if (array.isTextArray()) {
-                parent.addData(pair.getKey(), IrToYargConverter.generateList(array.getValues()));
+                IrToYargConverter.processTextArray(pair.getKey(), array, parent);
             } else if (array.isArrayList()) {
                 this.processArrayAsTable(pair.getKey(), array, parent);
             } else if (array.isPairArray()) {
                 this.processNestedPairs(pair, parent, root);
+            } else {
+                IrToYargConverter.generateArrayException(array.getValue(0));
             }
         } else if (value instanceof Pair) {
             final Pair nested = (Pair) value;
@@ -90,6 +94,26 @@ public class IrToYargConverter {
         } else if (value instanceof Text) {
             parent.addData(pair.getKey(), ((Text) value).getValue());
         }
+    }
+
+    /**
+     * Generates multiline list of values for a binding.
+     * @param name The name of the tag for YARG binding
+     * @param array The IR array element
+     * @param result The result YARG bindings
+     */
+    private static void processTextArray(
+        final String name, final Array array, final BandData result) {
+        final StringBuilder builder = new StringBuilder();
+        int idx = 1;
+        for (final Value item : array.getValues()) {
+            builder.append(idx).append(". ").append(((Text) item).getValue());
+            if (idx != array.size()) {
+                builder.append('\n');
+            }
+            idx += 1;
+        }
+        result.addData(name, builder.toString());
     }
 
     /**
@@ -136,20 +160,26 @@ public class IrToYargConverter {
     }
 
     /**
-     * Generates multiline list of values.
-     * @param values The values to be added into the list
-     * @return The list as string with newline characters
+     * Generates specific exceptions for arrays misuse cases.
+     * @param child The first element of the array that identifies
+     *  the type of the array
+     * @throws ExpectedTextArray If a text array is expected, but other objects
+     *  are found in the array
+     * @throws ExpectedPairArray If an array of pairs is expected, but other objects
+     *  are found in the list
+     * @throws ExpectedArrayList If an array list is expected, but other objects
+     *  are found in the list
      */
-    private static String generateList(final List<Value> values) {
-        final StringBuilder builder = new StringBuilder();
-        int idx = 1;
-        for (final Value item : values) {
-            builder.append(idx).append(". ").append(((Text) item).getValue());
-            if (idx != values.size()) {
-                builder.append('\n');
-            }
-            idx += 1;
+    private static void generateArrayException(final Value child)
+        throws ExpectedTextArray, ExpectedPairArray, ExpectedArrayList {
+        if (child instanceof Text) {
+            throw new ExpectedTextArray(child.toString());
         }
-        return builder.toString();
+        if (child instanceof Pair) {
+            throw new ExpectedPairArray(child.toString());
+        }
+        if (child instanceof Array) {
+            throw new ExpectedArrayList(child.toString());
+        }
     }
 }

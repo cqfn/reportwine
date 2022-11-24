@@ -24,6 +24,10 @@
 
 package org.cqfn.reportwine.model;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import java.util.Objects;
 
 /**
@@ -82,6 +86,19 @@ public final class Pair implements Value {
      */
     public Value getValue() {
         return this.value;
+    }
+
+    @Override
+    public String toJsonString() {
+        final Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
+        return gson.toJson(this.toJson());
+    }
+
+    @Override
+    public JsonElement toJson() {
+        final JsonObject object = new JsonObject();
+        object.add(this.key, this.value.toJson());
+        return object;
     }
 
     @Override

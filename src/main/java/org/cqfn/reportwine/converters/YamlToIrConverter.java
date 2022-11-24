@@ -173,6 +173,7 @@ public class YamlToIrConverter {
         } else {
             String text = scalar
                 .replaceAll("\r\n", "")
+                .replaceAll("\n", "")
                 .replaceAll("( )+", " ");
             if (text.charAt(0) == ' ') {
                 text = text.replaceFirst("( )+", "");
