@@ -29,7 +29,7 @@ import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 
 /**
- * Converts a string that contains a JSON object to an intermediate representation (IR).
+ * Interpreter of JavaScript code.
  *
  * @since 0.1
  */
