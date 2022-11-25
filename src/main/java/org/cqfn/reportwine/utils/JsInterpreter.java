@@ -53,7 +53,10 @@ public class JsInterpreter {
      * @return The result of the script invocation
      */
     public String runScript(final Map<String, Object> params) {
-        final Context context = Context.create("js");
+        final Context context = Context
+            .newBuilder("js")
+            .option("engine.WarnInterpreterOnly", "false")
+            .build();
         final Value bindings = context.getBindings("js");
         for (final Map.Entry<String, Object> param : params.entrySet()) {
             bindings.putMember(param.getKey(), param.getValue());
