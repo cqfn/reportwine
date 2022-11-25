@@ -1,0 +1,34 @@
+{
+  "report": {
+    "name": "MyProject",
+    "goals": [
+      "one",
+      "two",
+      "three"
+    ],
+    "subproject": "MyProjectSub",
+    "milestones": [
+      {
+        "description": "First stage",
+        "end": 2019,
+        "objectives": "Explore and collect"
+      },
+      {
+        "description": "Second stage",
+        "end": 2020,
+        "objectives": "Process and analyze"
+      },
+      {
+        "description": "Last stage",
+        "end": 2022,
+        "objectives": [
+          "Implement",
+          "Write paper"
+        ]
+      }
+    ],
+    "end_date": 2022,
+    "current_phase": 2,
+    "next_goal": "three"
+  }
+}
