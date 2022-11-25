@@ -45,7 +45,7 @@ class JsInterpreterTest {
         params.put("count", 1);
         params.put("name", "test");
         final JsInterpreter interpreter = new JsInterpreter(script);
-        final Object result = interpreter.runScript(params);
+        final String result = interpreter.runScript(params);
         Assertions.assertEquals("test1", result);
     }
 }

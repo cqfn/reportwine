@@ -48,13 +48,13 @@ public class IrMerger {
             result = new Pair(first.getKey());
             final Value firstval = first.getValue();
             final Value secondval = second.getValue();
-            if (firstval instanceof Array || secondval instanceof Array) {
-                this.processCasesWithArray(result, firstval, secondval);
-            }
-            if (firstval instanceof Text && secondval instanceof Text) {
+            if (firstval instanceof Code) {
                 result.setValue(secondval);
-            }
-            if (firstval instanceof Pair && secondval instanceof Pair) {
+            } else if (firstval instanceof Array || secondval instanceof Array) {
+                this.processCasesWithArray(result, firstval, secondval);
+            } else if (firstval instanceof Text && secondval instanceof Text) {
+                result.setValue(secondval);
+            } else if (firstval instanceof Pair && secondval instanceof Pair) {
                 result.setValue(this.merge((Pair) firstval, (Pair) secondval));
             }
         } else {

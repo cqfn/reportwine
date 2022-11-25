@@ -52,7 +52,7 @@ public class JsInterpreter {
      * @param params The parameters passed into script
      * @return The result of the script invocation
      */
-    public Object runScript(final Map<String, Object> params) {
+    public String runScript(final Map<String, Object> params) {
         final Context context = Context.create("js");
         final Value bindings = context.getBindings("js");
         for (final Map.Entry<String, Object> param : params.entrySet()) {
