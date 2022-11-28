@@ -36,6 +36,7 @@ import org.cqfn.reportwine.converters.IrToYargConverter;
 import org.cqfn.reportwine.converters.YamlToIrConverter;
 import org.cqfn.reportwine.exceptions.BaseException;
 import org.cqfn.reportwine.generators.DocxGenerator;
+import org.cqfn.reportwine.model.CodeHandler;
 import org.cqfn.reportwine.model.IrMerger;
 import org.cqfn.reportwine.model.Pair;
 import org.cqfn.reportwine.utils.FileNameValidator;
@@ -133,7 +134,9 @@ public class Main {
             final Pair settings = Main.convertYamlToIr(this.config);
             final IrMerger merger = new IrMerger();
             final Pair combined = merger.merge(info, settings);
-            converter = new IrToYargConverter(combined);
+            final CodeHandler handler = new CodeHandler(combined);
+            final Pair replaced = handler.process();
+            converter = new IrToYargConverter(replaced);
         }
         final BandData mappings = converter.convert();
         final DocxGenerator generator = new DocxGenerator(mappings);
