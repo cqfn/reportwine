@@ -167,6 +167,39 @@ class YamlToIrConverterTest {
     }
 
     /**
+     * Test case: a YAML structure with a sequence of literal block scalars
+     * should be converted to the IR as a text array.
+     * @param dir The temporary directory
+     */
+    @Test
+    void testConversionFromSequenceOfLiterals(@TempDir final Path dir) {
+        final List<String> content = new LinkedList<>();
+        content.add("list:");
+        content.add("  values:");
+        content.add("    - |");
+        content.add("      one");
+        content.add("      two");
+        content.add("    - |");
+        content.add("      three");
+        content.add("      four");
+        content.add("      five");
+        final Pair list = this.convertYamlToPair(dir, content);
+        final Value value = list.getValue();
+        Assertions.assertTrue(value instanceof Pair);
+        final Pair pair = (Pair) value;
+        final Value values = pair.getValue();
+        Assertions.assertTrue(values instanceof Array);
+        final Array array = (Array) values;
+        Assertions.assertEquals(2, array.size());
+        final Value first = array.getValue(0);
+        Assertions.assertTrue(first instanceof Text);
+        Assertions.assertEquals("one two", ((Text) first).getValue());
+        final Value second = array.getValue(1);
+        Assertions.assertTrue(second instanceof Text);
+        Assertions.assertEquals("three four five", ((Text) second).getValue());
+    }
+
+    /**
      * Converts a YAML file to the IR.
      * @param dir The temporary directory
      * @param content The content of the YAML file
