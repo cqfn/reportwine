@@ -76,7 +76,11 @@ public class YamlToIrConverter {
             root = "Doc";
         } else if (keys.size() == 1) {
             root = ((Scalar) keys.stream().findFirst().get()).value();
-            mapping = this.yaml.value(keys.stream().findFirst().get()).asMapping();
+            final YamlNode node = this.yaml.value(keys.stream().findFirst().get());
+            if (!node.type().equals(Node.MAPPING)) {
+                throw UnsupportedYamlFormat.INSTANCE;
+            }
+            mapping = node.asMapping();
         }
         final Pair item = new Pair(root);
         item.setValue(this.processYamlMapping(mapping));
@@ -98,7 +102,10 @@ public class YamlToIrConverter {
             switch (value.type()) {
                 case SCALAR:
                     object.setValue(
-                        YamlToIrConverter.processYamlScalar(value.asScalar().value())
+                        YamlToIrConverter.processYamlScalar(
+                            value.asScalar().value(),
+                            value.asScalar().toString()
+                        )
                     );
                     break;
                 case MAPPING:
@@ -144,7 +151,12 @@ public class YamlToIrConverter {
                 }
             }
             if (list) {
-                values.add(YamlToIrConverter.processYamlScalar(node.asScalar().value()));
+                values.add(
+                    YamlToIrConverter.processYamlScalar(
+                        node.asScalar().value(),
+                        node.asScalar().toString()
+                    )
+                );
             } else {
                 final Value nested = this.processYamlMapping(seq.yamlMapping(idx));
                 if (nested instanceof Pair) {
@@ -164,19 +176,29 @@ public class YamlToIrConverter {
     /**
      * Processes the YAML scalar to choose the value type and prepare value.
      * @param scalar The scalar value
+     * @param yaml The full YAML scalar with special symbols and indentation
      * @return The {@link Text} or {@link Code} value
      */
-    private static Value processYamlScalar(final String scalar) {
+    private static Value processYamlScalar(final String scalar, final String yaml) {
         final Value value;
+        final String delimiter;
+        if (yaml.startsWith("---\r\n|") || yaml.startsWith("---\n|")) {
+            delimiter = " ";
+        } else {
+            delimiter = "";
+        }
         if (scalar.charAt(0) == '$') {
             value = new Code(scalar.replaceFirst("\\$", ""));
         } else {
             String text = scalar
-                .replaceAll("\r\n", "")
+                .replaceAll("\r\n", delimiter)
                 .replaceAll("\n", "")
                 .replaceAll("( )+", " ");
             if (text.charAt(0) == ' ') {
                 text = text.replaceFirst("( )+", "");
+            }
+            if (text.charAt(text.length() - 1) == ' ' && " ".equals(delimiter)) {
+                text = text.substring(0, text.length() - 1);
             }
             value = new Text(text);
         }
