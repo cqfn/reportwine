@@ -32,14 +32,20 @@ import com.beust.jcommander.converters.FileConverter;
 import com.haulmont.yarg.structure.BandData;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 import org.cqfn.reportwine.converters.IrToYargConverter;
 import org.cqfn.reportwine.converters.YamlToIrConverter;
+import org.cqfn.reportwine.converters.YargToDocx4jConverter;
 import org.cqfn.reportwine.exceptions.BaseException;
 import org.cqfn.reportwine.generators.DocxGenerator;
+import org.cqfn.reportwine.generators.PptxGenerator;
 import org.cqfn.reportwine.model.CodeHandler;
 import org.cqfn.reportwine.model.IrMerger;
 import org.cqfn.reportwine.model.Pair;
+import org.cqfn.reportwine.utils.ExtensionHandler;
 import org.cqfn.reportwine.utils.FileNameValidator;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.pptx4j.Pptx4jException;
 
 /**
  * Main class.
@@ -47,6 +53,11 @@ import org.cqfn.reportwine.utils.FileNameValidator;
  * @since 0.1
  */
 public class Main {
+    /**
+     * The logger.
+     */
+    private static final Logger LOG = Logger.getLogger(Main.class.getName());
+
     /**
      * The template file.
      */
@@ -106,8 +117,11 @@ public class Main {
      * @param args The command-line arguments
      * @throws IOException If an error during input or output actions occurs
      * @throws BaseException If an error during a document processing occurs
+     * @throws Pptx4jException If an error occurs during loading of pptx slides
+     * @throws Docx4JException If an error occurs during loading of pptx template
      */
-    public static void main(final String... args) throws BaseException, IOException {
+    public static void main(final String... args)
+        throws IOException, BaseException, Pptx4jException, Docx4JException {
         final Main main = new Main();
         final JCommander jcr = JCommander.newBuilder()
             .addObject(main)
@@ -124,23 +138,38 @@ public class Main {
      * Runs actions.
      * @throws IOException If an error during input or output actions occurs
      * @throws BaseException If an error during a document processing occurs
+     * @throws Pptx4jException If an error occurs during loading of pptx slides
+     * @throws Docx4JException If an error occurs during loading of pptx template
      */
-    private void run() throws IOException, BaseException {
-        final Pair info = Main.convertYamlToIr(this.project);
-        final IrToYargConverter converter;
-        if (this.config == null) {
-            converter = new IrToYargConverter(info);
-        } else {
+    private void run()
+        throws IOException, BaseException, Pptx4jException, Docx4JException {
+        final String ext = new ExtensionHandler(this.template, this.output).getExtension();
+        Pair info = Main.convertYamlToIr(this.project);
+        if (this.config != null) {
             final Pair settings = Main.convertYamlToIr(this.config);
             final IrMerger merger = new IrMerger();
-            final Pair combined = merger.merge(info, settings);
-            final CodeHandler handler = new CodeHandler(combined);
-            final Pair replaced = handler.process();
-            converter = new IrToYargConverter(replaced);
+            info = merger.merge(info, settings);
         }
-        final BandData mappings = converter.convert();
-        final DocxGenerator generator = new DocxGenerator(mappings);
-        generator.renderDocument(this.template, this.output);
+        final CodeHandler handler = new CodeHandler(info);
+        final Pair replaced = handler.process();
+        final IrToYargConverter converter = new IrToYargConverter(replaced);
+        final BandData data = converter.convert();
+        switch (ext) {
+            case "docx":
+                final DocxGenerator docx = new DocxGenerator(data);
+                docx.renderDocument(this.template, this.output);
+                LOG.info("DOCX Report generated");
+                break;
+            case "pptx":
+                final YargToDocx4jConverter docxfj = new YargToDocx4jConverter(data);
+                final PptxGenerator pptx = new PptxGenerator(docxfj.convert(), docxfj.getTables());
+                pptx.renderDocument(this.template, this.output);
+                LOG.info("PPTX Report generated");
+                break;
+            default:
+                LOG.info("Report not generated");
+                break;
+        }
     }
 
     /**

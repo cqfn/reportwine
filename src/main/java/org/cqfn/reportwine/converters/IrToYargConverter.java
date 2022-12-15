@@ -107,7 +107,7 @@ public class IrToYargConverter {
         final StringBuilder builder = new StringBuilder();
         int idx = 1;
         for (final Value item : array.getValues()) {
-            builder.append(idx).append(". ").append(((Text) item).getValue());
+            builder.append(((Text) item).getValue());
             if (idx != array.size()) {
                 builder.append('\n');
             }

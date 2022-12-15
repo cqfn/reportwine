@@ -27,7 +27,7 @@ package org.cqfn.reportwine.utils;
 import com.beust.jcommander.IParameterValidator;
 import com.beust.jcommander.ParameterException;
 import java.io.File;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,7 +90,7 @@ public final class FileNameValidator implements IParameterValidator {
      *  {@code false} otherwise
      */
     private static boolean isValidFileExtension(final String value) {
-        final List<String> exts = Collections.singletonList("docx");
+        final List<String> exts = Arrays.asList("docx", "pptx");
         final Optional<String> ext = Optional.ofNullable(value)
             .filter(f -> f.contains("."))
             .map(f -> f.substring(value.lastIndexOf('.') + 1));
