@@ -173,13 +173,13 @@ public class IrToYargConverter {
     private static void generateArrayException(final Value child)
         throws ExpectedTextArray, ExpectedPairArray, ExpectedArrayList {
         if (child instanceof Text) {
-            throw new ExpectedTextArray(child.toString());
+            throw new ExpectedTextArray(child.toJsonString());
         }
         if (child instanceof Pair) {
-            throw new ExpectedPairArray(child.toString());
+            throw new ExpectedPairArray(child.toJsonString());
         }
         if (child instanceof Array) {
-            throw new ExpectedArrayList(child.toString());
+            throw new ExpectedArrayList(child.toJsonString());
         }
     }
 }

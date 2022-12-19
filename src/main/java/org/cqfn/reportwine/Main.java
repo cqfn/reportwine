@@ -144,7 +144,7 @@ public class Main {
         try {
             ext = new ExtensionHandler(this.template, this.output).getExtension();
         } catch (final ExpectedSimilarExtensions exception) {
-            LOG.severe(exception.getErrorMessage());
+            LOG.warning(exception.getErrorMessage());
         }
         if (!ext.isEmpty()) {
             final BandData data = this.convertYamlToBandData();
@@ -156,22 +156,15 @@ public class Main {
                     break;
                 case "pptx":
                     final YargToDocx4jConverter docxfj = new YargToDocx4jConverter(data);
-                    PptxGenerator pptx = null;
+                    final PptxGenerator pptx =
+                        new PptxGenerator(docxfj.convert(), docxfj.getTables());
                     try {
-                        pptx =
-                            new PptxGenerator(docxfj.convert(), docxfj.getTables());
-                    } catch (final BaseException exception) {
-                        LOG.severe("Cannot cast data to pptx bindings");
-                    }
-                    if (pptx != null) {
-                        try {
-                            pptx.renderDocument(this.template, this.output);
-                            LOG.info("PPTX Report generated");
-                        } catch (final Docx4JException exception) {
-                            LOG.severe("Cannot load pptx template");
-                        } catch (final Pptx4jException exception) {
-                            LOG.severe("Cannot load pptx template slides");
-                        }
+                        pptx.renderDocument(this.template, this.output);
+                        LOG.info("PPTX Report generated");
+                    } catch (final Docx4JException exception) {
+                        LOG.warning("Cannot load pptx template");
+                    } catch (final Pptx4jException exception) {
+                        LOG.warning("Cannot load pptx template slides");
                     }
                     break;
                 default:
@@ -199,11 +192,11 @@ public class Main {
                 info = merger.merge(info, settings);
             }
         } catch (final BaseException exception) {
-            LOG.severe("Cannot parse YAML data");
-            LOG.severe(exception.getErrorMessage());
+            LOG.warning("Cannot parse YAML data");
+            LOG.warning(exception.getErrorMessage());
             throw exception;
         } catch (final IOException exception) {
-            LOG.severe("Cannot read YAML file");
+            LOG.warning("Cannot read YAML file");
             throw exception;
         }
         final CodeHandler handler = new CodeHandler(info);
@@ -213,8 +206,8 @@ public class Main {
         try {
             data = converter.convert();
         } catch (final BaseException exception) {
-            LOG.severe("Cannot cast data to docx bindings");
-            LOG.severe(exception.getErrorMessage());
+            LOG.warning("Cannot cast data to docx bindings");
+            LOG.warning(exception.getErrorMessage());
             throw exception;
         }
         return data;
