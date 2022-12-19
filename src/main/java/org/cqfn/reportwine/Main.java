@@ -37,6 +37,7 @@ import org.cqfn.reportwine.converters.IrToYargConverter;
 import org.cqfn.reportwine.converters.YamlToIrConverter;
 import org.cqfn.reportwine.converters.YargToDocx4jConverter;
 import org.cqfn.reportwine.exceptions.BaseException;
+import org.cqfn.reportwine.exceptions.ExpectedSimilarExtensions;
 import org.cqfn.reportwine.generators.DocxGenerator;
 import org.cqfn.reportwine.generators.PptxGenerator;
 import org.cqfn.reportwine.model.CodeHandler;
@@ -117,11 +118,9 @@ public class Main {
      * @param args The command-line arguments
      * @throws IOException If an error during input or output actions occurs
      * @throws BaseException If an error during a document processing occurs
-     * @throws Pptx4jException If an error occurs during loading of pptx slides
-     * @throws Docx4JException If an error occurs during loading of pptx template
      */
     public static void main(final String... args)
-        throws IOException, BaseException, Pptx4jException, Docx4JException {
+        throws IOException, BaseException {
         final Main main = new Main();
         final JCommander jcr = JCommander.newBuilder()
             .addObject(main)
@@ -138,38 +137,87 @@ public class Main {
      * Runs actions.
      * @throws IOException If an error during input or output actions occurs
      * @throws BaseException If an error during a document processing occurs
-     * @throws Pptx4jException If an error occurs during loading of pptx slides
-     * @throws Docx4JException If an error occurs during loading of pptx template
      */
     private void run()
-        throws IOException, BaseException, Pptx4jException, Docx4JException {
-        final String ext = new ExtensionHandler(this.template, this.output).getExtension();
-        Pair info = Main.convertYamlToIr(this.project);
-        if (this.config != null) {
-            final Pair settings = Main.convertYamlToIr(this.config);
-            final IrMerger merger = new IrMerger();
-            info = merger.merge(info, settings);
+        throws IOException, BaseException {
+        String ext = "";
+        try {
+            ext = new ExtensionHandler(this.template, this.output).getExtension();
+        } catch (final ExpectedSimilarExtensions exception) {
+            LOG.severe(exception.getErrorMessage());
+        }
+        if (!ext.isEmpty()) {
+            final BandData data = this.convertYamlToBandData();
+            switch (ext) {
+                case "docx":
+                    final DocxGenerator docx = new DocxGenerator(data);
+                    docx.renderDocument(this.template, this.output);
+                    LOG.info("DOCX Report generated");
+                    break;
+                case "pptx":
+                    final YargToDocx4jConverter docxfj = new YargToDocx4jConverter(data);
+                    PptxGenerator pptx = null;
+                    try {
+                        pptx =
+                            new PptxGenerator(docxfj.convert(), docxfj.getTables());
+                    } catch (final BaseException exception) {
+                        LOG.severe("Cannot cast data to pptx bindings");
+                    }
+                    if (pptx != null) {
+                        try {
+                            pptx.renderDocument(this.template, this.output);
+                            LOG.info("PPTX Report generated");
+                        } catch (final Docx4JException exception) {
+                            LOG.severe("Cannot load pptx template");
+                        } catch (final Pptx4jException exception) {
+                            LOG.severe("Cannot load pptx template slides");
+                        }
+                    }
+                    break;
+                default:
+                    LOG.info("Report not generated");
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Converts YAML description of a project and additional configurations
+     * into the intermediate representation, runs scripts to obtain data and
+     * converts the result into YARG data bindings.
+     * @return The {@link BandData} object with YARG bindings
+     * @throws IOException If an error during input or output actions occurs
+     * @throws BaseException If an error during a document processing occurs
+     */
+    private BandData convertYamlToBandData() throws BaseException, IOException {
+        Pair info = null;
+        try {
+            info = Main.convertYamlToIr(this.project);
+            if (this.config != null) {
+                final Pair settings = Main.convertYamlToIr(this.config);
+                final IrMerger merger = new IrMerger();
+                info = merger.merge(info, settings);
+            }
+        } catch (final BaseException exception) {
+            LOG.severe("Cannot parse YAML data");
+            LOG.severe(exception.getErrorMessage());
+            throw exception;
+        } catch (final IOException exception) {
+            LOG.severe("Cannot read YAML file");
+            throw exception;
         }
         final CodeHandler handler = new CodeHandler(info);
         final Pair replaced = handler.process();
         final IrToYargConverter converter = new IrToYargConverter(replaced);
-        final BandData data = converter.convert();
-        switch (ext) {
-            case "docx":
-                final DocxGenerator docx = new DocxGenerator(data);
-                docx.renderDocument(this.template, this.output);
-                LOG.info("DOCX Report generated");
-                break;
-            case "pptx":
-                final YargToDocx4jConverter docxfj = new YargToDocx4jConverter(data);
-                final PptxGenerator pptx = new PptxGenerator(docxfj.convert(), docxfj.getTables());
-                pptx.renderDocument(this.template, this.output);
-                LOG.info("PPTX Report generated");
-                break;
-            default:
-                LOG.info("Report not generated");
-                break;
+        BandData data = null;
+        try {
+            data = converter.convert();
+        } catch (final BaseException exception) {
+            LOG.severe("Cannot cast data to docx bindings");
+            LOG.severe(exception.getErrorMessage());
+            throw exception;
         }
+        return data;
     }
 
     /**
