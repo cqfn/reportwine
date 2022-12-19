@@ -28,11 +28,9 @@ import com.beust.jcommander.ParameterException;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.cqfn.reportwine.exceptions.BaseException;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.pptx4j.Pptx4jException;
 
 /**
  * Test for {@link Main} class.
@@ -77,8 +75,7 @@ class MainTest {
         boolean caught = false;
         try {
             Main.main(example);
-        } catch (final BaseException | IOException | ParameterException
-            | Pptx4jException | Docx4JException exc) {
+        } catch (final BaseException | IOException | ParameterException exc) {
             caught = true;
         }
         Assertions.assertFalse(caught);
@@ -103,8 +100,7 @@ class MainTest {
         boolean caught = false;
         try {
             Main.main(example);
-        } catch (final BaseException | IOException | ParameterException
-            | Pptx4jException | Docx4JException exc) {
+        } catch (final BaseException | IOException | ParameterException exc) {
             caught = true;
         }
         Assertions.assertFalse(caught);
@@ -120,8 +116,7 @@ class MainTest {
         boolean caught = false;
         try {
             Main.main(example);
-        } catch (final BaseException | IOException | ParameterException
-            | Pptx4jException | Docx4JException exc) {
+        } catch (final BaseException | IOException | ParameterException exc) {
             caught = true;
         }
         Assertions.assertTrue(caught);
@@ -133,7 +128,7 @@ class MainTest {
      */
     @Test
     void testWithInvalidYaml(@TempDir final Path source)
-        throws IOException, Pptx4jException, Docx4JException {
+        throws IOException {
         final String[] example = {
             MainTest.TEMPLATE,
             MainTest.TESTS_PATH.concat("template.docx"),
