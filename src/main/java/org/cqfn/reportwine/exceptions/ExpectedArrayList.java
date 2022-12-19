@@ -55,9 +55,10 @@ public final class ExpectedArrayList extends BaseException {
     @Override
     public String getErrorMessage() {
         return new StringBuilder()
-            .append("Expected array values in the list: '")
+            .append("Expected array values in the list: ")
+            .append(System.lineSeparator())
             .append(this.array)
-            .append('\'')
+            .append(System.lineSeparator())
             .toString();
     }
 }

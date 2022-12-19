@@ -55,9 +55,10 @@ public final class ExpectedPairArray extends BaseException {
     @Override
     public String getErrorMessage() {
         return new StringBuilder()
-            .append("Expected pair values in the array: '")
+            .append("Expected pair values in the array: ")
+            .append(System.lineSeparator())
             .append(this.array)
-            .append('\'')
+            .append(System.lineSeparator())
             .toString();
     }
 }

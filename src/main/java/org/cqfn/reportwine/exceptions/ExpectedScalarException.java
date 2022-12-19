@@ -55,9 +55,10 @@ public final class ExpectedScalarException extends BaseException {
     @Override
     public String getErrorMessage() {
         return new StringBuilder()
-            .append("Expected scalar value in the array: '")
+            .append("Expected scalar value in the array: ")
+            .append(System.lineSeparator())
             .append(this.array)
-            .append('\'')
+            .append(System.lineSeparator())
             .toString();
     }
 }
