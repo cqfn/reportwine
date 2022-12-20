@@ -35,6 +35,8 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+
+import com.google.gson.JsonElement;
 import org.cqfn.reportwine.converters.YamlToIrConverter;
 import org.cqfn.reportwine.exceptions.BaseException;
 import org.junit.jupiter.api.Assertions;
@@ -61,12 +63,23 @@ class JsonSerializerTest {
     }
 
     /**
+     * Test serialization of a text with number to JSON.
+     */
+    @Test
+    void testNumericTextSerialization() {
+        final Text text = new Text("3.14");
+        final JsonElement value = text.toJson();
+        Assertions.assertEquals(3.14, value.getAsDouble());
+    }
+
+    /**
      * Test serialization of a code to JSON.
      */
     @Test
     void testCodeSerialization() {
         final Code code = new Code("$ return project[current_phase]");
         Assertions.assertEquals("null", code.toJson().toString());
+        Assertions.assertEquals("null", code.toJsonString());
     }
 
     /**

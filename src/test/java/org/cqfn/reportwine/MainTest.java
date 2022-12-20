@@ -199,6 +199,54 @@ class MainTest {
     }
 
     /**
+     * Test passing not existing pptx file.
+     * @param source A temporary directory
+     */
+    @Test
+    void testPassingNotFoundPptx(@TempDir final Path source) {
+        final String[] example = {
+            MainTest.TEMPLATE,
+            MainTest.TESTS_PATH.concat("pattern.pptx"),
+            MainTest.OUTPUT,
+            source.resolve("report.pptx").toString(),
+            MainTest.PROJECT,
+            MainTest.TESTS_PATH.concat("project_valid.yml"),
+        };
+        boolean caught = false;
+        try {
+            Main.main(example);
+        } catch (final IOException | BaseException exception) {
+            caught = true;
+        }
+        Assertions.assertFalse(caught);
+        this.logs.assertContains("Cannot load pptx template");
+    }
+
+    /**
+     * Test passing empty pptx file, without slides.
+     * @param source A temporary directory
+     */
+    @Test
+    void testPassingEmptyPptx(@TempDir final Path source) {
+        final String[] example = {
+            MainTest.TEMPLATE,
+            MainTest.TESTS_PATH.concat("empty.pptx"),
+            MainTest.OUTPUT,
+            source.resolve("report.pptx").toString(),
+            MainTest.PROJECT,
+            MainTest.TESTS_PATH.concat("project_valid.yml"),
+        };
+        boolean caught = false;
+        try {
+            Main.main(example);
+        } catch (final IOException | BaseException exception) {
+            caught = true;
+        }
+        Assertions.assertFalse(caught);
+        this.logs.assertContains("Cannot find pptx template slides");
+    }
+
+    /**
      * Test passing YAML file of unsupported format.
      * @param source A temporary directory
      */

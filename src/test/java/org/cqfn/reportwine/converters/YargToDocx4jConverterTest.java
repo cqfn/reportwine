@@ -91,4 +91,35 @@ class YargToDocx4jConverterTest {
         Assertions.assertEquals("Polina", data.get(YargToDocx4jConverterTest.NAME));
         Assertions.assertEquals("developer", data.get(YargToDocx4jConverterTest.ROLE));
     }
+
+    /**
+     * Test conversion of BandData with several layers of nested children bands
+     * into mappings for Docx4j.
+     */
+    @Test
+    void testConversionOfSeveralLayersBands() {
+        final BandData project = new BandData("project");
+        project.addData(YargToDocx4jConverterTest.NAME, "MyProject");
+        final BandData subproject = new BandData("subproject", project);
+        subproject.addData(YargToDocx4jConverterTest.NAME, "PartProject");
+        final BandData first = new BandData("members", subproject);
+        first.addData(YargToDocx4jConverterTest.NAME, "Ivan");
+        first.addData(YargToDocx4jConverterTest.ROLE, "teamleader");
+        final BandData second = new BandData("members", subproject);
+        second.addData(YargToDocx4jConverterTest.NAME, "Polina");
+        second.addData(YargToDocx4jConverterTest.ROLE, "developer");
+        subproject.addChildren(Arrays.asList(first, second));
+        project.addChild(subproject);
+        final YargToDocx4jConverter converter = new YargToDocx4jConverter(project);
+        final Map<String, String> mappings = converter.convert();
+        Assertions.assertEquals(4, mappings.size());
+        Assertions.assertNotNull(mappings.get("project.name"));
+        Assertions.assertNotNull(mappings.get(YargToDocx4jConverterTest.NAME));
+        Assertions.assertNotNull(mappings.get("subproject.name"));
+        Assertions.assertNotNull(mappings.get("project.subproject.name"));
+        final Map<String, List<BandData>> tables = converter.getTables();
+        Assertions.assertEquals(2, tables.size());
+        Assertions.assertNotNull(tables.get("subproject.members"));
+        Assertions.assertNotNull(tables.get("project.subproject.members"));
+    }
 }

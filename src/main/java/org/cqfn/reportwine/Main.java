@@ -164,7 +164,7 @@ public class Main {
                     } catch (final Docx4JException exception) {
                         LOG.warning("Cannot load pptx template");
                     } catch (final Pptx4jException exception) {
-                        LOG.warning("Cannot load pptx template slides");
+                        LOG.warning("Cannot find pptx template slides");
                     }
                     break;
                 default:
