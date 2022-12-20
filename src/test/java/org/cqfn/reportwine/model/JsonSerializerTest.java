@@ -35,8 +35,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.google.gson.JsonElement;
 import org.cqfn.reportwine.converters.YamlToIrConverter;
 import org.cqfn.reportwine.exceptions.BaseException;
 import org.junit.jupiter.api.Assertions;
@@ -68,8 +66,7 @@ class JsonSerializerTest {
     @Test
     void testNumericTextSerialization() {
         final Text text = new Text("3.14");
-        final JsonElement value = text.toJson();
-        Assertions.assertEquals(3.14, value.getAsDouble());
+        Assertions.assertEquals(3.14, text.toJson().getAsDouble());
     }
 
     /**

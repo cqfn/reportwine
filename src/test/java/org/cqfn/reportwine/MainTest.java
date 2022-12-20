@@ -40,6 +40,7 @@ import org.junit.jupiter.api.io.TempDir;
  *
  * @since 0.1
  */
+@SuppressWarnings("PMD.TooManyMethods")
 class MainTest {
     /**
      * The "--template" option.
@@ -72,6 +73,11 @@ class MainTest {
     private static final String REPORT_DOCX = "report.docx";
 
     /**
+     * The "project_valid" file.
+     */
+    private static final String PROJECT_VALID = "project_valid.yml";
+
+    /**
      * The capturer for Logger.
      */
     @RegisterExtension
@@ -89,7 +95,7 @@ class MainTest {
             MainTest.OUTPUT,
             source.resolve(MainTest.REPORT_DOCX).toString(),
             MainTest.PROJECT,
-            MainTest.TESTS_PATH.concat("project_valid.yml"),
+            MainTest.TESTS_PATH.concat(MainTest.PROJECT_VALID),
         };
         boolean caught = false;
         try {
@@ -112,7 +118,7 @@ class MainTest {
             MainTest.OUTPUT,
             source.resolve(MainTest.REPORT_DOCX).toString(),
             MainTest.PROJECT,
-            MainTest.TESTS_PATH.concat("project_valid.yml"),
+            MainTest.TESTS_PATH.concat(MainTest.PROJECT_VALID),
             "--config",
             MainTest.TESTS_PATH.concat("config.yml"),
         };
@@ -210,7 +216,7 @@ class MainTest {
             MainTest.OUTPUT,
             source.resolve("report.pptx").toString(),
             MainTest.PROJECT,
-            MainTest.TESTS_PATH.concat("project_valid.yml"),
+            MainTest.TESTS_PATH.concat(MainTest.PROJECT_VALID),
         };
         boolean caught = false;
         try {
@@ -234,7 +240,7 @@ class MainTest {
             MainTest.OUTPUT,
             source.resolve("report.pptx").toString(),
             MainTest.PROJECT,
-            MainTest.TESTS_PATH.concat("project_valid.yml"),
+            MainTest.TESTS_PATH.concat(MainTest.PROJECT_VALID),
         };
         boolean caught = false;
         try {
@@ -335,7 +341,7 @@ class MainTest {
             MainTest.OUTPUT,
             source.resolve("report.pptx").toString(),
             MainTest.PROJECT,
-            MainTest.TESTS_PATH.concat("project_valid.yml"),
+            MainTest.TESTS_PATH.concat(MainTest.PROJECT_VALID),
         };
         boolean caught = false;
         try {
