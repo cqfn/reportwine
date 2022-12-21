@@ -24,7 +24,6 @@
 
 package org.cqfn.reportwine.generators;
 
-import com.haulmont.yarg.structure.BandData;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -52,18 +51,17 @@ class DocxGeneratorTest {
     private static final String TESTS_PATH = "src/test/sample/";
 
     /**
+     * Examples of data bindings for testing.
+     */
+    private final TestBandDataCreator data = new TestBandDataCreator();
+
+    /**
      * Test generation of docx report on simple text replacements.
      * @param source A temporary directory
      */
     @Test
-    void testDocxReportGeneration(@TempDir final Path source) {
-        final BandData project = new BandData("project");
-        project.addData("project_name", "MyProject");
-        project.addData(
-            "research_scope", "The goal of work is to reduce time spent on report creation."
-        );
-        project.addData("non_research_goals", "implement idea\nrelease the project\ntest project");
-        final DocxGenerator generator = new DocxGenerator(project);
+    void testSimpleDocxReportGeneration(@TempDir final Path source) {
+        final DocxGenerator generator = new DocxGenerator(this.data.simpleExample());
         boolean caught = false;
         try {
             generator.renderDocument(
@@ -79,6 +77,43 @@ class DocxGeneratorTest {
         try {
             expected = WordprocessingMLPackage.load(
                 new File(DocxGeneratorTest.TESTS_PATH.concat("result_expected.docx"))
+            );
+            actual = WordprocessingMLPackage.load(
+                source.resolve("report.docx").toFile()
+            );
+        } catch (final Docx4JException exception) {
+            caught = true;
+        }
+        Assertions.assertFalse(caught);
+        Assertions.assertNotNull(expected);
+        Assertions.assertNotNull(actual);
+        final String exptext = this.collectAllText(expected.getMainDocumentPart());
+        final String acttext = this.collectAllText(actual.getMainDocumentPart());
+        Assertions.assertEquals(exptext, acttext);
+    }
+
+    /**
+     * Test generation of docx report on complex replacements.
+     * @param source A temporary directory
+     */
+    @Test
+    void testComplexDocxReportGeneration(@TempDir final Path source) {
+        final DocxGenerator generator = new DocxGenerator(this.data.complexExample());
+        boolean caught = false;
+        try {
+            generator.renderDocument(
+                new File(DocxGeneratorTest.TESTS_PATH.concat("complex_template.docx")),
+                source.resolve("report.docx").toFile()
+            );
+        } catch (final IOException exception) {
+            caught = true;
+        }
+        Assertions.assertFalse(caught);
+        WordprocessingMLPackage expected = null;
+        WordprocessingMLPackage actual = null;
+        try {
+            expected = WordprocessingMLPackage.load(
+                new File(DocxGeneratorTest.TESTS_PATH.concat("complex_result_expected.docx"))
             );
             actual = WordprocessingMLPackage.load(
                 source.resolve("report.docx").toFile()
