@@ -74,7 +74,7 @@ class PptxGeneratorTest {
      * @param source A temporary directory
      */
     @Test
-    void testComplexDocxReportGeneration(@TempDir final Path source) {
+    void testComplexPptxReportGeneration(@TempDir final Path source) {
         this.checkContentEquality(
             this.data.complexExample(),
             "complex",
