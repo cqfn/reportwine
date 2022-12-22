@@ -32,7 +32,7 @@ import java.util.Arrays;
  *
  * @since 0.1
  */
-public class TestBandDataCreator {
+public class TestBandData {
     /**
      * The structure for simple example.
      */
@@ -47,9 +47,9 @@ public class TestBandDataCreator {
      * Constructor.
      * Creates a simple and a complex examples.
      */
-    public TestBandDataCreator() {
-        this.simple = TestBandDataCreator.createSimpleExample();
-        this.complex = TestBandDataCreator.createComplexExample();
+    public TestBandData() {
+        this.simple = TestBandData.createSimpleExample();
+        this.complex = TestBandData.createComplexExample();
     }
 
     /**

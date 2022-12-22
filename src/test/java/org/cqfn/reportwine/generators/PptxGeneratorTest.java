@@ -26,26 +26,26 @@ package org.cqfn.reportwine.generators;
 
 import com.haulmont.yarg.structure.BandData;
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
+import org.cqfn.reportwine.converters.YargToDocx4jConverter;
+import org.docx4j.dml.CTRegularTextRun;
 import org.docx4j.jaxb.XPathBinderAssociationIsPartialException;
 import org.docx4j.openpackaging.exceptions.Docx4JException;
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
-import org.docx4j.openpackaging.parts.WordprocessingML.MainDocumentPart;
-import org.docx4j.wml.Text;
+import org.docx4j.openpackaging.packages.PresentationMLPackage;
+import org.docx4j.openpackaging.parts.PresentationML.SlidePart;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.pptx4j.Pptx4jException;
 
 /**
- * Test for {@link DocxGenerator} class.
+ * Test for {@link PptxGenerator} class.
  *
  * @since 0.1
  */
-class DocxGeneratorTest {
+class PptxGeneratorTest {
     /**
      * The folder with test resources.
      */
@@ -57,11 +57,11 @@ class DocxGeneratorTest {
     private final TestBandData data = new TestBandData();
 
     /**
-     * Test generation of docx report on simple text replacements.
+     * Test generation of pptx report on simple text replacements.
      * @param source A temporary directory
      */
     @Test
-    void testSimpleDocxReportGeneration(@TempDir final Path source) {
+    void testSimplePptxReportGeneration(@TempDir final Path source) {
         this.checkContentEquality(
             this.data.simpleExample(),
             "simple",
@@ -70,7 +70,7 @@ class DocxGeneratorTest {
     }
 
     /**
-     * Test generation of docx report on complex replacements.
+     * Test generation of pptx report on complex replacements.
      * @param source A temporary directory
      */
     @Test
@@ -90,32 +90,35 @@ class DocxGeneratorTest {
      */
     private void checkContentEquality(
         final BandData band, final String prefix, @TempDir final Path source) {
-        final DocxGenerator generator = new DocxGenerator(band);
+        final YargToDocx4jConverter converter = new YargToDocx4jConverter(band);
+        final PptxGenerator generator = new PptxGenerator(
+            converter.convert(), converter.getTables()
+        );
         boolean caught = false;
         try {
             generator.renderDocument(
                 new File(
-                    String.format("%s%s_template.docx", DocxGeneratorTest.TESTS_PATH, prefix)
+                    String.format("%s%s_template.pptx", PptxGeneratorTest.TESTS_PATH, prefix)
                 ),
-                source.resolve("report.docx").toFile()
+                source.resolve("report.pptx").toFile()
             );
-        } catch (final IOException exception) {
+        } catch (final Docx4JException | Pptx4jException exception) {
             caught = true;
         }
         Assertions.assertFalse(caught);
-        WordprocessingMLPackage expected = null;
-        WordprocessingMLPackage actual = null;
+        PresentationMLPackage expected = null;
+        PresentationMLPackage actual = null;
         try {
-            expected = WordprocessingMLPackage.load(
+            expected = PresentationMLPackage.load(
                 new File(
                     String.format(
-                        "%s%s_result_expected.docx",
-                        DocxGeneratorTest.TESTS_PATH, prefix
+                        "%s%s_result_expected.pptx",
+                        PptxGeneratorTest.TESTS_PATH, prefix
                     )
                 )
             );
-            actual = WordprocessingMLPackage.load(
-                source.resolve("report.docx").toFile()
+            actual = PresentationMLPackage.load(
+                source.resolve("report.pptx").toFile()
             );
         } catch (final Docx4JException exception) {
             caught = true;
@@ -123,29 +126,41 @@ class DocxGeneratorTest {
         Assertions.assertFalse(caught);
         Assertions.assertNotNull(expected);
         Assertions.assertNotNull(actual);
-        final String exptext = this.collectAllText(expected.getMainDocumentPart());
-        final String acttext = this.collectAllText(actual.getMainDocumentPart());
-        Assertions.assertEquals(exptext, acttext);
+        final StringBuilder exptext = new StringBuilder();
+        final StringBuilder acttext = new StringBuilder();
+        try {
+            final List<SlidePart> expslides = expected.getMainPresentationPart().getSlideParts();
+            for (final SlidePart slide : expslides) {
+                exptext.append(this.collectAllText(slide));
+            }
+            final List<SlidePart> actlides = actual.getMainPresentationPart().getSlideParts();
+            for (final SlidePart slide : actlides) {
+                acttext.append(this.collectAllText(slide));
+            }
+        } catch (final Pptx4jException exception) {
+            caught = true;
+        }
+        Assertions.assertFalse(caught);
+        Assertions.assertEquals(exptext.toString(), acttext.toString());
     }
 
     /**
-     * Sequentially collects all values from text tags in the document, deletes all spaces and
+     * Sequentially collects all values from text tags in the slide, deletes all spaces and
      * concatenates them into a single string.
-     * @param part The main document part
+     * @param part The slide part
      * @return The result string
      */
-    private String collectAllText(final MainDocumentPart part) {
+    private String collectAllText(final SlidePart part) {
         final StringBuilder builder = new StringBuilder();
-        final String xpath = "//w:t";
+        final String xpath = "//a:r";
         boolean caught = false;
         try {
             final List<Object> list = part.getJAXBNodesViaXPath(xpath, false);
             for (final Object node : list) {
-                if (node instanceof JAXBElement) {
-                    final Object value = ((JAXBElement) node).getValue();
-                    if (value instanceof Text) {
-                        final String text = ((Text) value).getValue();
-                        builder.append(text.replaceAll("\\s", ""));
+                if (node instanceof CTRegularTextRun) {
+                    final String value = ((CTRegularTextRun) node).getT();
+                    if (value != null) {
+                        builder.append(value.replaceAll("\\s", ""));
                     }
                 }
             }

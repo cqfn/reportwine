@@ -63,9 +63,9 @@ class MainTest {
     private static final String TESTS_PATH = "src/test/sample/";
 
     /**
-     * The "template.docx" file.
+     * The "simple_template.docx" file.
      */
-    private static final String TEMPLATE_DOCX = "template.docx";
+    private static final String TEMPLATE_DOCX = "simple_template.docx";
 
     /**
      * The "report.docx" file.
