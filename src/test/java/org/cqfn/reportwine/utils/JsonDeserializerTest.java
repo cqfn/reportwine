@@ -63,6 +63,22 @@ class JsonDeserializerTest {
     }
 
     /**
+     * Test deserialization of a simple JSON object to IR pair.
+     */
+    @Test
+    void unsupportedJsonFormatException() throws UnsupportedJsonFormat {
+        final String source = "{ \"name\": \"MyProject\", stage: 3 }";
+        final JsonDeserializer deserializer = new JsonDeserializer(source);
+        boolean oops = false;
+        try {
+            deserializer.convert();
+        } catch (final UnsupportedJsonFormat exception) {
+            oops = true;
+        }
+        Assertions.assertTrue(oops);
+    }
+
+    /**
      * Test deserialization of a complex JSON object to IR structure.
      */
     @Test

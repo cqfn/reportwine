@@ -22,43 +22,9 @@
  * SOFTWARE.
  */
 
-package org.cqfn.reportwine.exceptions;
-
 /**
- * Exception thrown while parsing internal representation of document bindings
- * when an array of only pair values is expected, but another object is found in the array.
+ * This package contains tests for generators.
  *
  * @since 0.1
  */
-public final class ExpectedPairArray extends BaseException {
-    private static final long serialVersionUID = -5907859591113936120L;
-
-    /**
-     * The array.
-     */
-    private final String array;
-
-    /**
-     * Constructor.
-     * @param array The array
-     */
-    public ExpectedPairArray(final String array) {
-        super();
-        this.array = array;
-    }
-
-    @Override
-    public String getInitiator() {
-        return "IrToYargConverter";
-    }
-
-    @Override
-    public String getErrorMessage() {
-        return new StringBuilder()
-            .append("Expected pair values in the array: ")
-            .append(System.lineSeparator())
-            .append(this.array)
-            .append(System.lineSeparator())
-            .toString();
-    }
-}
+package org.cqfn.reportwine.generators;

@@ -150,7 +150,7 @@ public class YamlToIrConverter {
                     throw new ExpectedScalarException(seq.toString());
                 }
             }
-            if (list) {
+            if (list || node.type().equals(Node.SCALAR)) {
                 values.add(
                     YamlToIrConverter.processYamlScalar(
                         node.asScalar().value(),

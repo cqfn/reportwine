@@ -28,7 +28,6 @@ import com.haulmont.yarg.structure.BandData;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.cqfn.reportwine.exceptions.BaseException;
 
 /**
  * Converter from the YARG {@link BandData} representation to mappings
@@ -65,9 +64,8 @@ public class YargToDocx4jConverter {
     /**
      * Converts YARG objects into Docx4j bindings for variable replacement in pptx template.
      * @return The mapping for Docx4j variable bindings
-     * @throws BaseException If an error occurs during IR parsing
      */
-    public Map<String, String> convert() throws BaseException {
+    public Map<String, String> convert() {
         this.processBandData(this.root);
         this.processBandChildren(this.root);
         return this.mappings;

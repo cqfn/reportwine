@@ -61,12 +61,22 @@ class JsonSerializerTest {
     }
 
     /**
+     * Test serialization of a text with number to JSON.
+     */
+    @Test
+    void testNumericTextSerialization() {
+        final Text text = new Text("3.14");
+        Assertions.assertEquals(3.14, text.toJson().getAsDouble());
+    }
+
+    /**
      * Test serialization of a code to JSON.
      */
     @Test
     void testCodeSerialization() {
         final Code code = new Code("$ return project[current_phase]");
         Assertions.assertEquals("null", code.toJson().toString());
+        Assertions.assertEquals("null", code.toJsonString());
     }
 
     /**

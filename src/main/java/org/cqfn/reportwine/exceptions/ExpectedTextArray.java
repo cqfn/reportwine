@@ -55,8 +55,10 @@ public final class ExpectedTextArray extends BaseException {
     public String getErrorMessage() {
         return new StringBuilder()
             .append("Expected text values in the array: '")
+            .append(System.lineSeparator())
             .append(this.array)
-            .append("...\'")
+            .append("...")
+            .append(System.lineSeparator())
             .toString();
     }
 }
