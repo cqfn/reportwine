@@ -4,7 +4,7 @@
 ___
 
 
-**Reportwine** is a tool for document generation from `templates` and `YAML` files.
+**Reportwine** is a tool for document generation from **templates** and **YAML** files.
 
 Supported document formats: `DOCX` and `PPTX`.
 
@@ -24,7 +24,7 @@ Probably it will take a long time to adjust all the information to the right for
 
 With Reportwine, we suggest the following solution:
 - store necessary content of reports in `YAML project` files, which helps to structure the information from the very beginning;
-- create `templates` - reusable documents of target format that contain placeholders (variables) which will be further replaced with the content;
+- create **templates** - reusable documents of target format that contain placeholders (variables) which will be further replaced with the content;
 - include additional scripts into `YAML configuration` files that process, collect or count information stored in `YAML project` files.
 
 ## Requirements
@@ -86,8 +86,8 @@ document:
 ```
 
 In `descriptions` you have to specify a mapping of variables with values:
-- `variable` - is a name of the placeholder in the template, where you wish to place data
-- `value` - data to be placed instead of a variable in the target report
+- **variable** - is a name of the placeholder in the template, where you wish to place data
+- **value** - data to be placed instead of a variable in the target report
 
 #### Text values
 
@@ -123,8 +123,8 @@ project:
 ```
 
 **NOTE** that a sequence of text scalars when placed into 
-- `docx` template will look just like a list of items separated by a new line: with no bullets nor numbers
-- `pptx` template will inherit the style from the template: may become a bulleted or numbered list
+- DOCX template will look just like a list of items separated by a new line: with no bullets nor numbers
+- PPTX template will inherit the style from the template: may become a bulleted or numbered list
 
 #### Tables
 
