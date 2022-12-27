@@ -73,7 +73,7 @@ public class YamlToIrConverter {
         YamlMapping mapping = this.yaml;
         String root = "";
         if (keys.size() > 1) {
-            root = "Doc";
+            root = "document";
         } else if (keys.size() == 1) {
             root = ((Scalar) keys.stream().findFirst().get()).value();
             final YamlNode node = this.yaml.value(keys.stream().findFirst().get());

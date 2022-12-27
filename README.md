@@ -75,13 +75,13 @@ java -jar reportwine.jar
 
 This section describes how you should structure content of a report in a YAML file with document descriptions.
 
-`YAML project` should include the root tag for your report (by defaiult it is set to `doc`) 
+`YAML project` should include a root tag for your report (by default it is set to `document`) 
 and a nested block of descriptions.
 
 Example:
 
 ```yaml
-report:
+document:
   descriptions
 ```
 
@@ -210,7 +210,119 @@ project:
 
 ### YAML configuration 
 
-We advise you to store data that seldom change in `YAML description` files, 
+We advise you to store data that seldom change in `YAML project` files, 
 and specify those data that frequently change, or scripts to retrieve new structures in special `YAML configuration` files.
 
 The second type of YAML is optional one, but may become useful in case you occasionally need to change logic in processing of data.
+
+`YAML configuration` file should also have a root tag. It must be **similar** to the one in a `YAML project` file.
+
+Reportwine combines YAML structures of both files before their processing.
+
+### Template
+
+This section describes how you should create **templates**.
+
+Template is a reusable file where some parts that are expected to contain data are replaced with variables (placeholders).
+
+Variables for **text** and **list** values should have the format: `${parent.variable_name}`.
+
+So, considering this `YAML project`:
+
+```yaml
+project:
+  name: Reportwine
+  about: The goal of the work is to reduce time spent on a report creation.
+  main_steps:
+    - implement idea
+    - release the project
+    - evaluate the results
+```
+
+and the DOCX template
+
+![simple docx template](src/main/documents/images/simple_template_docx.png)
+
+the result will be the following:
+
+![simple docx result](src/main/documents/images/simple_result_docx.png)
+
+for the PPTX template
+
+![simple pptx template](src/main/documents/images/simple_template_pptx.png)
+
+the result will be the following:
+
+![simple pptx result](src/main/documents/images/simple_result_pptx.png)
+
+**Tables** in templates that you want to fill with data should include a **band** name.
+You need to place it in a first cell of a first column (top left).
+
+The format is `##band=variable_name`.
+A band name and a cell value should be separated by at least one whitespace, like `##band=variable_name CellData`.
+
+To specify table row data mappings, you need to add a new row and write variable names for each cell in all columns.
+
+For example, considering the YAML sequence for table data:
+
+```yaml
+project:
+  milestones:
+    - description: First stage
+      duration: 3
+      objectives: Explore and collect
+    - description: Second stage
+      duration: 4
+      objectives: Process and analyze
+    - description: Last stage
+      duration: 4
+      objectives:
+        - Implement
+        - Write paper
+```
+
+and the DOCX template
+
+![table template docx](src/main/documents/images/table_template_docx.png)
+
+the result will be the following:
+
+![simple docx result](src/main/documents/images/table_result_docx.png)
+
+> The same is for PPTX templates
+
+To separate data of **nested variables**, provide a full name of a data binding (like it is specified in a YAML file) 
+from a root tag to a concrete nested tag.
+
+For example, considering this structure
+
+```yaml
+project:
+  name: MainProject
+  timeline:
+    start_date: 2018
+    end_date: 2022
+  subproject:
+    name: Subproject
+    timeline:
+      start_date: 2019
+      end_date: 2020
+```
+
+if you want to refer to `start_date`, your variables should be:
+- `${project.timeline.start_date}` for main project
+- `${project.subproject.timeline.start_date}` for subproject
+
+if you want to refer to `name`, your variables may have short name, as they won't cause a conflict of names:
+- `${project.name}` for main project
+- `${subproject.name}` for subproject
+
+## How it works
+
+Reportwine performs the following steps:
+
+- converts `YAML project` file into [Internal Representation](src/main/java/org/cqfn/reportwine/model) (IR);
+- if there is a `YAML configuration` file, Reportwine also converts it into IR and merges two structures;
+- consequently finds `Code` values in IR, executes them and replaces with obtained data;
+- converts result IR object to [BandData](https://github.com/cuba-platform/yarg/wiki/Structure#band), the structure that represents data bindings for templates;
+- selects an appropriate type of generator (DOCX or PPTX), loads a template and renders a new document from it with variable replacements.

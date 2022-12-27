@@ -1,0 +1,7 @@
+project:
+  name: Reportwine
+  about: The goal of the work is to reduce time spent on a report creation.
+  main_steps:
+    - implement idea
+    - release the project
+    - evaluate the results

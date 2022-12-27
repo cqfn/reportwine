@@ -1,2 +1,9 @@
 project:
-  current_stage: 2
+  current_phase: 2
+  descriptions_list: |
+    $ var list = '';
+      for (var i = 0; i < this.milestones.length; i++) {
+        if (i > 0) list = list + ', ';
+        list = list + this.milestones[i].description;
+      }
+      return list;

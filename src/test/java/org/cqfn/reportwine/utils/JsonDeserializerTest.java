@@ -97,7 +97,7 @@ class JsonDeserializerTest {
         try {
             final YamlMapping yaml = Yaml.createYamlInput(
                 new File(
-                    JsonDeserializerTest.TESTS_PATH.concat("complex_example_no_code.yml")
+                    JsonDeserializerTest.TESTS_PATH.concat("complex_description_no_code.yml")
                 )
             ).readYamlMapping();
             final YamlToIrConverter conv = new YamlToIrConverter(yaml);

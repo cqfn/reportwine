@@ -74,11 +74,16 @@ public class TestBandData {
      */
     private static BandData createSimpleExample() {
         final BandData project = new BandData("project");
-        project.addData("name", "MyProject");
+        project.addData("name", "Reportwine");
         project.addData(
-            "research_scope", "The goal of work is to reduce time spent on report creation."
+            "about", "The goal of the work is to reduce time spent on a report creation."
         );
-        project.addData("non_research_goals", "implement idea\nrelease the project\ntest project");
+        project.addData(
+            "main_steps",
+            String.format(
+                "%s\n%s\n%s", "implement idea", "release the project", "evaluate the results"
+            )
+        );
         return project;
     }
 
@@ -88,7 +93,7 @@ public class TestBandData {
      */
     private static BandData createComplexExample() {
         final BandData project = new BandData("project");
-        project.addData("name", "MyProject");
+        project.addData("name", "MyResearch");
         project.addData(
             "about",
             String.format(

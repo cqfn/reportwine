@@ -158,7 +158,7 @@ class JsonSerializerTest {
         try {
             final YamlMapping yaml = Yaml.createYamlInput(
                 new File(
-                    JsonSerializerTest.TESTS_PATH.concat("complex_example.yml")
+                    JsonSerializerTest.TESTS_PATH.concat("complex_description.yml")
                 )
             ).readYamlMapping();
             final YamlToIrConverter conv = new YamlToIrConverter(yaml);
