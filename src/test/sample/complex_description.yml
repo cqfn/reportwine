@@ -1,4 +1,4 @@
-report:
+project:
   name: MyProject
   goals:
     - one
@@ -26,3 +26,4 @@ report:
         - Implement
         - Write paper
   current_phase: 3
+  current_objectives: "$ return this.milestones[this.current_phase - 1].objectives;"

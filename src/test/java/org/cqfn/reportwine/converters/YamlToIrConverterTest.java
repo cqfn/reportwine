@@ -58,7 +58,7 @@ class YamlToIrConverterTest {
         content.add("project_name: MyProject");
         content.add("current_stage: 2");
         final Pair root = this.convertYamlToPair(dir, content);
-        Assertions.assertEquals("Doc", root.getKey());
+        Assertions.assertEquals("document", root.getKey());
     }
 
     /**

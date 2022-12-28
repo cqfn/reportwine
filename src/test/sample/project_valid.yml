@@ -5,5 +5,5 @@ project:
   non_research_goals:
     - implement idea
     - release the project
-    - test project
+    - test the project
   current_stage: 1

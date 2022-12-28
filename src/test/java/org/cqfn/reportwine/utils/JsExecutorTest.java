@@ -58,7 +58,7 @@ class JsExecutorTest {
         try {
             final YamlMapping yaml = Yaml.createYamlInput(
                 new File(
-                    JsExecutorTest.TESTS_PATH.concat("complex_example.yml")
+                    JsExecutorTest.TESTS_PATH.concat("complex_description.yml")
                 )
             ).readYamlMapping();
             final YamlToIrConverter conv = new YamlToIrConverter(yaml);

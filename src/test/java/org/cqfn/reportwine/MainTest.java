@@ -118,7 +118,7 @@ class MainTest {
             MainTest.OUTPUT,
             source.resolve(MainTest.REPORT_DOCX).toString(),
             MainTest.PROJECT,
-            MainTest.TESTS_PATH.concat(MainTest.PROJECT_VALID),
+            MainTest.TESTS_PATH.concat("complex_description.yml"),
             "--config",
             MainTest.TESTS_PATH.concat("config.yml"),
         };
@@ -317,7 +317,7 @@ class MainTest {
             MainTest.OUTPUT,
             source.resolve("report.pptx").toString(),
             MainTest.PROJECT,
-            MainTest.TESTS_PATH.concat("complex_example.yml"),
+            MainTest.TESTS_PATH.concat("complex_description.yml"),
         };
         boolean caught = false;
         try {
