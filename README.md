@@ -1,6 +1,6 @@
-![Build and test](https://github.com/pollyvolk/reportwine/workflows/Build%20and%20test/badge.svg)
-[![Codecov](https://codecov.io/gh/pollyvolk/reportwine/branch/master/graph/badge.svg)](https://codecov.io/gh/pollyvolk/reportwine)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/pollyvolk/reportwine/blob/master/LICENSE.txt)
+![Build and test](https://github.com/cqfn/reportwine/workflows/Build%20and%20test/badge.svg)
+[![Codecov](https://codecov.io/gh/cqfn/reportwine/branch/master/graph/badge.svg)](https://codecov.io/gh/cqfn/reportwine)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/cqfn/reportwine/blob/master/LICENSE.txt)
 ___
 
 
